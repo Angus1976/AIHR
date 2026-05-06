@@ -1,0 +1,12 @@
+AIHR 本地 PostgreSQL 快照（与 docker-compose 默认库名/用户一致时可用）
+
+恢复前请停止依赖该库的 API，或在新库上操作。示例：
+
+  export DATABASE_URL='postgresql://aihr_app:你的密码@127.0.0.1:25432/aihr_app?schema=public'
+  psql "$DATABASE_URL" -f backups/aihr_postgres_local.sql
+
+或在容器内：
+
+  docker exec -i aihr-app-postgres psql -U aihr_app -d aihr_app < backups/aihr_postgres_local.sql
+
+快照为开发/演示数据，勿将含真实隐私的 dump 推送到公开仓库。

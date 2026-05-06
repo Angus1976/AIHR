@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 职AI通（AIHR）— AI 赋能就业服务平台
 
 本仓库承载 **职AI通** 产品工程：**原生微信小程序**（主入口）、**Vue 3 + Vite 管理端**（运营 / 就业老师 / 管理员）、**NestJS + Prisma API**（腾讯系能力绑定位 + 多 LLM 路由占位）。PRD 见 `docs/PRD-SUMMARY.md` 与 `PRD/`。
@@ -44,11 +45,11 @@ npm run build        # 依次执行以上三项
 
 | 问题 | 原因 | 处理 |
 |------|------|------|
-| `127.0.0.1:15174` / `:15175` 拒绝连接 | 端口由 **本机 Vite** 占用，Docker **不会** 启动它们 | 在项目根执行 **`npm run dev:admin`** 与 **`npm run dev:sim`**（需已 `npm install` 对应子应用） |
+| `127.0.0.1:15174` / `:15175` 拒绝连接 | 未启动对应进程：`docker compose` 会起 **admin-web** / **miniprogram-sim**（Nginx 静态页 + 反代 `/v1`）；若只用本机 Vite 调试则需分别 **`npm run dev:admin`**、`**npm run dev:sim**` | 在项目根执行 **`docker compose up -d`**（或 `**npm run docker:up**`），或按需单独起 Vite |
 | 访问 `3300` 出现 `Cannot GET /v1/%E2%80%A6` | 地址里被带上了**省略号字符** `…`（不是合法路径） | 改用**完整路径**，例如 **`http://127.0.0.1:3300/v1/health`**，不要从文档里复制带「…」的占位 URL |
 | 管理端/模拟器能开但接口失败 | API 未启动或代理端口不对 | `docker compose ps` 看 **api**；代理默认 **`http://127.0.0.1:3300`**，可用 **`VITE_API_PROXY_TARGET`** 改 |
 
-**推荐一次起全栈本地调试**（三个终端）：① `docker compose up -d` ② `npm run dev:admin` ③ `npm run dev:sim`。
+**推荐一次起全栈**：`docker compose up -d --build`（或根目录 `**npm run docker:up**`）即包含 **API + Postgres + Redis + 管理端 + 小程序模拟器**；仅改前端热更新时再另开终端跑 `npm run dev:admin` / `**npm run dev:sim**`。
 
 ### 1. 依赖服务（Docker）
 
@@ -123,11 +124,12 @@ npm run dev
 
 确保根目录 `.env` 中 `**LOCAL_SIMULATOR_ENABLED=true**`（与 `apps/api` 共用），且 API 已按上文启动；模拟器通过 Vite 将 `/v1` 代理到 `**http://127.0.0.1:3300**`（可用环境变量 `**VITE_API_PROXY_TARGET**` 覆盖）。
 
-访问终端里打印的地址（一般为 `**http://127.0.0.1:15175/**`；若端口占用则会自动换端口）。点击 **本地模拟登录** 即调用 `POST /v1/auth/dev/login`（**勿**在请求头带旧 JWT；若见「未找到该角色的模拟用户」请先 `npm run prisma:demo`）。可切换：
+若使用 `docker compose`，直接在浏览器打开 **`http://127.0.0.1:15175/`**（与 `.env` 中 `MINIPROGRAM_SIM_PORT` 一致）。若仅跑本机 **`npm run dev:sim`**，则以终端打印的 http 地址为准（端口占满时 Vite 可能自动换端口）。点击 **本地模拟登录** 即调用 `POST /v1/auth/dev/login`（**勿**在请求头带旧 JWT；若见「未找到该角色的模拟用户」请先 `npm run prisma:demo`）。可切换：
 
 **若页面无法打开或空白**
 
-- 必须在 `apps/miniprogram-sim` 下执行 `**npm run dev`**（或根目录 `**npm run dev:sim**`），用 **http://** 打开；**不要**用资源管理器双击 `index.html`（`file://` 无法加载 Vite 的 ESM，会空白）。
+- 使用 **Docker** 时：先 `**docker compose up -d**`，再打开 `**http://127.0.0.1:15175/**`（需 **api** 为 healthy）。
+- 使用本机 **Vite** 时：必须在 `apps/miniprogram-sim` 下执行 `**npm run dev`**（或根目录 `**npm run dev:sim**`），用 **http://** 打开；**不要**用资源管理器双击 `index.html`（`file://` 无法加载 Vite 的 ESM，会空白）。
 - 构建后的 `dist/` 也不能直接双击 `index.html`，应执行 `**npm run preview --prefix apps/miniprogram-sim`**（或 `cd apps/miniprogram-sim && npm run preview`）。
 - 从 **WSL / 容器** 访问时，请用终端里 **Network** 一段的 IP，并保证本机防火墙放行该端口。
 - 代理 API 默认指向 `**http://127.0.0.1:3300`**（可用 `VITE_API_PROXY_TARGET` 覆盖）；API 未启动时页面能开，但登录会失败。
@@ -141,7 +143,13 @@ npm run dev
 docker compose up -d --build
 ```
 
-Docker API 默认：`http://localhost:3300/v1/health`。首次建库后建议注入种子数据：
+- **API**：`http://127.0.0.1:3300/v1/health`（端口由 `.env` 中 `API_PORT` 控制）
+- **管理端（生产构建 + Nginx）**：`http://127.0.0.1:15174`（`ADMIN_WEB_PORT`）
+- **小程序 H5 模拟器**：`http://127.0.0.1:15175`（`MINIPROGRAM_SIM_PORT`）
+
+上述两个前端容器会将浏览器同源的 **`/v1/*`** 反代到 **api** 服务，无需再配 `VITE_API_PROXY_TARGET`。
+
+首次建库后建议注入种子数据：
 
 ```bash
 docker exec aihr-app-api npx prisma db seed
@@ -242,3 +250,6 @@ npm run prisma:demo
 ## 许可证
 
 待定（由项目方指定）。
+=======
+# AIHR
+>>>>>>> 2276722adc1bd1e7bfb95f83d795c24f8af31707

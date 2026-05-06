@@ -12,8 +12,9 @@
     "build": "npm run build:api && npm run build:admin && npm run build:sim",
     "prisma:migrate": "npm run prisma:migrate --prefix apps/api",
     "prisma:demo": "npm run prisma:demo --prefix apps/api",
-    "docker:up": "docker compose up -d",
-    "docker:build-api": "docker compose build api"
+    "docker:up": "docker compose up -d --build",
+    "docker:build-api": "docker compose build api",
+    "docker:build-web": "docker compose build admin-web miniprogram-sim"
   },
   "engines": {
     "node": ">=20"

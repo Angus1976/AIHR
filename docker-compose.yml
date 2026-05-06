@@ -83,6 +83,36 @@ services:
       retries: 5
       start_period: 40s
 
+  # 管理端静态站 + /v1 反代至 api（无需本机再跑 npm run dev:admin）
+  admin-web:
+    build:
+      context: ./apps/admin-web
+      dockerfile: Dockerfile
+    container_name: aihr-app-admin-web
+    restart: unless-stopped
+    networks:
+      - aihr_app_internal
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${ADMIN_WEB_PORT:-15174}:80"
+
+  # 小程序 H5 模拟器静态站 + /v1 反代（无需本机再跑 npm run dev:sim）
+  miniprogram-sim:
+    build:
+      context: ./apps/miniprogram-sim
+      dockerfile: Dockerfile
+    container_name: aihr-app-miniprogram-sim
+    restart: unless-stopped
+    networks:
+      - aihr_app_internal
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${MINIPROGRAM_SIM_PORT:-15175}:80"
+
 volumes:
   aihr_app_pgdata:
     name: aihr-app-pgdata
