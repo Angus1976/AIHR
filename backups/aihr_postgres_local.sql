@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 3av7fxI0UyJB6uCXAOeH9WCtnPIZ5aznfHQFPyBFXD75t8QcrqyfJRSQowXNC57
+\restrict CDsUyYf4nyQZfhbGJNBOdYA2dDt68WhnjzYI7mdVNoXyWQ6fcMAKQmRX9ddfc2D
 
 -- Dumped from database version 16.13
 -- Dumped by pg_dump version 16.13
@@ -1215,7 +1215,7 @@ COPY public."SmsOtp" (id, "tenantId", phone, purpose, "codeHash", "expiresAt", "
 --
 
 COPY public."Tenant" (id, name, slug, "logoUrl", "primaryColor", "accentColor", "welcomeText", "wxMiniAppId", "createdAt", "updatedAt") FROM stdin;
-cmodor6790000196zyooghdmp	职AI通	default	\N	#243F34	#B87932	从岗位匹配、协议签署到服务付费的一站式就业服务工作流		2026-04-25 01:53:44.997	2026-05-06 02:54:40.476
+cmodor6790000196zyooghdmp	职爱通	default	\N	#243F34	#B87932	从岗位匹配、协议签署到服务付费的一站式就业服务工作流		2026-04-25 01:53:44.997	2026-05-06 03:12:29.506
 \.
 
 
@@ -2200,5 +2200,5 @@ ALTER TABLE ONLY public."WxMiniUser"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 3av7fxI0UyJB6uCXAOeH9WCtnPIZ5aznfHQFPyBFXD75t8QcrqyfJRSQowXNC57
+\unrestrict CDsUyYf4nyQZfhbGJNBOdYA2dDt68WhnjzYI7mdVNoXyWQ6fcMAKQmRX9ddfc2D
 

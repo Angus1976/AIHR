@@ -145,6 +145,10 @@ a:focus-visible {
   min-width: 0;
 }
 
+.page {
+  overflow-x: clip;
+}
+
 .card h2,
 .card h3 {
   font-family: Sora, 'Noto Sans SC', 'PingFang SC', sans-serif;
@@ -155,10 +159,11 @@ a:focus-visible {
 .table {
   width: 100%;
   max-width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
   border: 1px solid var(--color-line) !important;
   border-radius: var(--radius-md) !important;
-  overflow: hidden;
+  overflow: visible;
+  border-collapse: collapse;
 }
 
 .table th {
@@ -177,6 +182,27 @@ a:focus-visible {
   word-break: break-word;
   min-width: 0;
   max-width: 100%;
+}
+
+/* 卡片内直接子级为表格时：整块可横向滚动，避免列被压扁或 JSON 块挤出视口 */
+.card:has(> table.table) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.card:has(> table.table) > table.table {
+  min-width: max-content;
+}
+
+/* 表格内 JSON / 代码块：可读宽度 + 纵向滚动，避免定死过窄 */
+.table td pre,
+.table th pre {
+  max-width: min(42rem, 92vw);
+  min-width: 12rem;
+  max-height: min(50vh, 20rem);
+  margin: 0;
+  box-sizing: border-box;
 }
 
 button,

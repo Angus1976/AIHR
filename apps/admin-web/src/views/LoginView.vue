@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { setToken } from '../lib/api';
+import { refreshTenantBrandFromApi } from '../lib/tenant-brand';
 
 const router = useRouter();
 const route = useRoute();
@@ -43,6 +44,7 @@ async function submit() {
       return;
     }
     setToken(data.accessToken);
+    await refreshTenantBrandFromApi();
     const redirect = route.query.redirect;
     await router.replace(
       typeof redirect === 'string' && redirect.startsWith('/')

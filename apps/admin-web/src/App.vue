@@ -1,15 +1,42 @@
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
+import { refreshTenantBrandFromApi, tenantBrand } from './lib/tenant-brand';
+
+const logoBroken = ref(false);
+
+watch(
+  () => tenantBrand.logoUrl,
+  () => {
+    logoBroken.value = false;
+  },
+);
+
+const brandMarkChar = computed(() => {
+  const n = tenantBrand.name.trim();
+  return n ? n.slice(0, 1) : '职';
+});
+
+onMounted(() => {
+  void refreshTenantBrandFromApi();
+});
 </script>
 
 <template>
   <div class="layout">
     <aside class="sidebar">
       <div class="brand">
-        <span class="brand-mark">职</span>
-        <div>
-          <div class="brand-title">职AI通</div>
-          <div class="brand-sub">人才服务运营台</div>
+        <img
+          v-if="tenantBrand.logoUrl && !logoBroken"
+          :src="tenantBrand.logoUrl"
+          class="brand-logo"
+          alt=""
+          @error="logoBroken = true"
+        />
+        <span v-else class="brand-mark">{{ brandMarkChar }}</span>
+        <div class="brand-text">
+          <div class="brand-title">{{ tenantBrand.name }}</div>
+          <div class="brand-sub">{{ tenantBrand.subtitle }}</div>
         </div>
       </div>
       <nav class="nav">
@@ -70,8 +97,23 @@ import { RouterLink, RouterView } from 'vue-router';
   gap: 0.75rem;
   align-items: center;
   padding: 0.35rem 0.5rem;
+  min-width: 0;
+}
+.brand-text {
+  min-width: 0;
+  flex: 1;
+}
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: oklch(0.98 0.008 80 / 0.96);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px oklch(0.90 0.02 90 / 0.35);
 }
 .brand-mark {
+  flex-shrink: 0;
   width: 44px;
   height: 44px;
   border-radius: 14px;
@@ -83,23 +125,36 @@ import { RouterLink, RouterView } from 'vue-router';
   justify-content: center;
   font-weight: 800;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  font-size: 1.05rem;
+  line-height: 1;
 }
 .brand-title {
   font-family: Sora, 'Noto Sans SC', 'PingFang SC', sans-serif;
   font-weight: 800;
   letter-spacing: 0.02em;
   font-size: 1.05rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .brand-sub {
   font-size: 12px;
   opacity: 0.72;
   margin-top: 2px;
+  overflow-wrap: anywhere;
 }
 .nav {
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
   min-width: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-bottom: 0.5rem;
+  margin-right: -0.25rem;
+  padding-right: 0.25rem;
 }
 .nav a {
   color: oklch(0.88 0.018 88);

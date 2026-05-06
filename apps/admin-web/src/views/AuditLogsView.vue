@@ -100,15 +100,22 @@ onMounted(() => {
 .page h1 { margin: 0; }
 .muted { color: var(--color-muted); font-size: 14px; }
 .bad { color: var(--color-warning); }
-.filter { display: flex; gap: 0.75rem; align-items: flex-end; margin: 1rem 0; }
-label { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; color: var(--color-muted); font-size: 13px; }
+.filter {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  box-sizing: border-box;
+}
+label { flex: 1; display: flex; flex-direction: column; gap: 0.45rem; color: var(--color-muted); font-size: 13px; min-width: 0; }
 input { padding: 0.5rem 0.6rem; border: 1px solid var(--color-line); border-radius: 10px; }
 .btn { border: none; border-radius: 10px; padding: 0.5rem 0.9rem; cursor: pointer; }
 .btn.primary { background: var(--color-primary); color: oklch(0.98 0.008 80); }
 .btn.ghost { background: var(--color-card); border: 1px solid var(--color-line); color: var(--color-primary-strong); }
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.table th, .table td { text-align: left; padding: 0.6rem 0.55rem; border-bottom: 1px solid var(--color-line); vertical-align: top; }
+.table th, .table td { text-align: left; padding: 0.65rem 0.72rem; border-bottom: 1px solid var(--color-line); vertical-align: top; }
+.table td:first-child strong { word-break: break-all; overflow-wrap: anywhere; }
 .mono { font-family: ui-monospace, monospace; font-size: 12px; }
 .small { font-size: 12px; }
-pre { margin: 0; max-width: 360px; max-height: 140px; overflow: auto; font-size: 12px; white-space: pre-wrap; }
 </style>

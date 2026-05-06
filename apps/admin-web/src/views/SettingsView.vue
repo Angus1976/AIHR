@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { api } from '../lib/api';
+import { applyTenantBrand } from '../lib/tenant-brand';
 
 type Tenant = {
   id: string;
@@ -37,6 +38,7 @@ async function load() {
       accentColor: tenant.value.accentColor ?? '',
       welcomeText: tenant.value.welcomeText ?? '',
     };
+    applyTenantBrand(tenant.value);
   } catch (e) {
     err.value = e instanceof Error ? e.message : '加载失败';
   } finally {
@@ -59,6 +61,7 @@ async function save() {
         welcomeText: form.value.welcomeText.trim() || undefined,
       }),
     });
+    applyTenantBrand(tenant.value);
     msg.value = '租户配置已保存';
   } catch (e) {
     err.value = e instanceof Error ? e.message : '保存失败';
