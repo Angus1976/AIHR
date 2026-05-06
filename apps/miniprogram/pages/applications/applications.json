@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "我的投递",
+  "usingComponents": {},
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

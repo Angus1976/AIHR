@@ -1,0 +1,38 @@
+<view class="page">
+  <view wx:if="{{job}}">
+    <view class="card">
+      <view class="title">{{job.title}}</view>
+      <view class="muted">{{job.enterprise.name}}</view>
+    </view>
+    <view class="card" wx:if="{{job.jdMarkdown}}">
+      <view class="section-title">职位描述</view>
+      <text class="jd">{{job.jdMarkdown}}</text>
+    </view>
+
+    <view class="card" wx:if="{{match}}">
+      <view class="section-title">匹配参考</view>
+      <view class="match-line">
+        关键词重叠度约
+        <text class="match-num">{{matchPercent}}%</text>
+        （粗算，仅供参考）
+      </view>
+      <view class="muted" wx:if="{{!match.profileFilled}}">完善「我的档案」后参考价值更高</view>
+      <view class="muted" wx:elif="{{match.matchedTokenCount}}">
+        命中 {{match.matchedTokenCount}} 个片段
+      </view>
+    </view>
+    <view class="card muted match-hint" wx:if="{{matchHint && !match}}">{{matchHint}}</view>
+
+    <view class="card">
+      <view class="section-title">我要投递</view>
+      <textarea
+        class="pitch"
+        placeholder="选填：一句话介绍自己或优势"
+        value="{{pitch}}"
+        bindinput="onPitchInput"
+      />
+      <button class="btn-primary" loading="{{applying}}" bindtap="apply">投递简历</button>
+    </view>
+  </view>
+  <view wx:if="{{error}}" class="card muted warn">{{error}}</view>
+</view>

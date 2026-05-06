@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-primary: oklch(0.29 0.055 158);
+  --color-primary-strong: oklch(0.22 0.05 158);
+  --color-accent: oklch(0.67 0.13 54);
+  --color-accent-soft: oklch(0.91 0.045 67);
+  --color-sage: oklch(0.73 0.06 145);
+  --color-success: oklch(0.43 0.10 150);
+  --color-success-bg: oklch(0.92 0.052 146);
+  --color-warning: oklch(0.50 0.11 52);
+  --color-warning-bg: oklch(0.93 0.06 68);
+  --color-bg: oklch(0.965 0.018 78);
+  --color-bg-deep: oklch(0.925 0.026 82);
+  --color-card: oklch(0.992 0.006 78);
+  --color-text: oklch(0.21 0.018 145);
+  --color-muted: oklch(0.50 0.018 120);
+  --color-line: oklch(0.82 0.02 88);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-card: 0 18px 45px rgba(44, 52, 35, 0.08);
+  --shadow-lift: 0 22px 60px rgba(44, 52, 35, 0.14);
+  font-family:
+    'Noto Sans SC',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    sans-serif;
+  color: var(--color-text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 8% 8%, oklch(0.91 0.055 72 / 0.75), transparent 34%),
+    linear-gradient(135deg, oklch(0.985 0.012 82), oklch(0.94 0.018 128));
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(39, 50, 37, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 50, 37, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent 70%);
+  z-index: -1;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+button:hover,
+a:hover {
+  transform: translateY(-1px);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid oklch(0.67 0.13 54 / 0.55);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: var(--color-primary-strong);
+  background: var(--color-accent-soft);
+}
+
+.page h1 {
+  font-family: Sora, 'Noto Sans SC', 'PingFang SC', sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--color-primary-strong);
+}
+
+.page > .muted,
+.lead {
+  max-width: 860px;
+}
+
+.card {
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-lg) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)),
+    var(--color-card) !important;
+  box-shadow: var(--shadow-card) !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.page,
+.layout,
+.main,
+.card,
+.head,
+.grid,
+.row,
+.meta,
+.preview,
+.form {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.card h2,
+.card h3 {
+  font-family: Sora, 'Noto Sans SC', 'PingFang SC', sans-serif;
+  letter-spacing: -0.015em;
+  color: var(--color-primary-strong);
+}
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+
+.table th {
+  background: oklch(0.94 0.018 82);
+  color: var(--color-primary-strong) !important;
+  font-weight: 700;
+}
+
+.table td {
+  background: oklch(0.99 0.006 78 / 0.76);
+}
+
+.table th,
+.table td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+}
+
+button,
+.btn {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+a,
+p,
+span,
+strong,
+label,
+small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.btn.primary,
+.btn.sm,
+.btn-primary {
+  background:
+    linear-gradient(180deg, oklch(0.36 0.065 158), var(--color-primary-strong)) !important;
+  color: oklch(0.98 0.008 80) !important;
+  box-shadow: 0 10px 22px rgba(35, 62, 49, 0.18);
+}
+
+.btn.ghost,
+.linkish {
+  background: oklch(0.99 0.006 78 / 0.84) !important;
+  border: 1px solid var(--color-line) !important;
+  color: var(--color-primary-strong) !important;
+}
+
+.link,
+.applink {
+  color: var(--color-primary) !important;
+  text-decoration-color: oklch(0.67 0.13 54 / 0.5) !important;
+}
+
+.tag.pub,
+.tag {
+  border-radius: 999px !important;
+}
+
+.ok {
+  color: var(--color-success) !important;
+}
+
+.bad,
+.error {
+  color: var(--color-warning) !important;
+}
+
+input,
+select,
+textarea {
+  min-width: 0;
+  max-width: 100%;
+  background: oklch(0.99 0.006 78 / 0.86) !important;
+  border-color: var(--color-line) !important;
+  color: var(--color-text);
+}
+
+pre,
+.result {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid oklch(0.37 0.035 140 / 0.18);
+  background: oklch(0.22 0.026 142) !important;
+  color: oklch(0.93 0.018 88) !important;
+}
+
+code,
+.mono,
+.code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

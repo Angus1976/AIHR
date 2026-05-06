@@ -1,0 +1,140 @@
+import {
+  PaymentMilestoneKey,
+  PaymentMilestoneStatus,
+  SeekerServiceStepKey,
+  SeekerServiceStepStatus,
+  ServiceProviderType,
+} from '@prisma/client';
+
+export const DEFAULT_SERVICE_STEPS = [
+  {
+    key: SeekerServiceStepKey.PRE_CAREER_PLANNING,
+    title: '职前规划',
+    valueProposition: '对齐求职流程「建档与方向」：沉淀经历与兴趣、完成测评与服务沟通，形成竞争力结论与岗位/薪资共识。',
+    providerType: ServiceProviderType.HYBRID,
+    status: SeekerServiceStepStatus.IN_PROGRESS,
+    sortOrder: 10,
+    checklist: [
+      '个人经历/兴趣证书/技能特长表',
+      '职业兴趣、性格、智商/情商测试',
+      '预约职业发展沟通',
+      '生成职业竞争力分析报告',
+      '签署求职方向及薪资范围确认书',
+    ],
+  },
+  {
+    key: SeekerServiceStepKey.RESUME_OPTIMIZATION,
+    title: '简历优化',
+    valueProposition: '对齐求职流程「材料准备」：在目标岗位下完成诊断、按建议改稿、复核后定稿可投递版本。',
+    providerType: ServiceProviderType.HYBRID,
+    status: SeekerServiceStepStatus.NOT_STARTED,
+    sortOrder: 20,
+    checklist: [
+      '填写或导入原始简历',
+      '生成简历诊断报告',
+      '求职者确认修改建议',
+      '确认优化稿',
+      '多轮沟通修改并确认最终简历',
+    ],
+  },
+  {
+    key: SeekerServiceStepKey.INTERVIEW_COACHING,
+    title: '面试辅导',
+    valueProposition:
+      '对齐求职流程「面试准备」：方法论与题库学习 + 在腾讯会议完成模拟面试（通信由腾讯会议；会中引导、记录与复盘说明通过会议侧能力承载）；输出评估与改进建议。',
+    providerType: ServiceProviderType.HYBRID,
+    status: SeekerServiceStepStatus.NOT_STARTED,
+    sortOrder: 30,
+    checklist: [
+      '人事关/部门关/笔试关/软技能视频学习',
+      '在小程序预约腾讯会议模拟面试并入会',
+      '会中完成引导、记录或转写（由会议侧配置）',
+      '输出单次评估与改进建议',
+    ],
+  },
+  {
+    key: SeekerServiceStepKey.INTERVIEW_CONFIRMATION,
+    title: '面试确认',
+    valueProposition:
+      '对齐求职流程「企业面试机会」：平台推送真实岗位面试机会，求职者在小程序内确认参加或拒绝并留痕。',
+    providerType: ServiceProviderType.PLATFORM,
+    status: SeekerServiceStepStatus.NOT_STARTED,
+    sortOrder: 40,
+    checklist: [
+      '平台导入面试岗位',
+      '一键推送企业岗位面试机会',
+      '求职者确认参加或拒绝',
+    ],
+  },
+  {
+    key: SeekerServiceStepKey.POST_OFFER_COACHING,
+    title: '职后辅导',
+    valueProposition: '获得 offer 后进入试用期陪伴，覆盖角色适应、职场答疑和心态管理。',
+    providerType: ServiceProviderType.HYBRID,
+    status: SeekerServiceStepStatus.LOCKED,
+    sortOrder: 50,
+    checklist: [
+      '新员工入职指南',
+      '通用职场技能培训',
+      '8:00-22:00 职场问题答疑',
+      '试用期心态管理与陪伴',
+    ],
+  },
+  {
+    key: SeekerServiceStepKey.POST_CONVERSION_PLANNING,
+    title: '职后规划',
+    valueProposition: '转正后持续评估职业进展，推荐技能提升、社交能力课程、优质岗位和学习资源。',
+    providerType: ServiceProviderType.PARTNER,
+    status: SeekerServiceStepStatus.LOCKED,
+    sortOrder: 60,
+    checklist: [
+      '职业发展建议',
+      '社交能力提升课程',
+      '市场更优岗位机会推送',
+      '持续学习资源推荐',
+    ],
+  },
+];
+
+export const DEFAULT_PAYMENT_MILESTONES = [
+  {
+    key: PaymentMilestoneKey.SIGN_CONTRACT,
+    title: '签约确认',
+    amountFen: 0,
+    status: PaymentMilestoneStatus.PAYABLE,
+    triggerText: '确认 6 步服务内容并签署服务协议',
+    sortOrder: 10,
+  },
+  {
+    key: PaymentMilestoneKey.OFFER_DEPOSIT,
+    title: 'Offer 后定金',
+    amountFen: 9900,
+    status: PaymentMilestoneStatus.LOCKED,
+    triggerText: '获得 offer 后触发',
+    sortOrder: 20,
+  },
+  {
+    key: PaymentMilestoneKey.MONTH_2_BALANCE,
+    title: '第 2 月尾款',
+    amountFen: 19900,
+    status: PaymentMilestoneStatus.LOCKED,
+    triggerText: '入职满第 2 个月后触发',
+    sortOrder: 30,
+  },
+  {
+    key: PaymentMilestoneKey.MONTH_3_BALANCE,
+    title: '第 3 月尾款',
+    amountFen: 19900,
+    status: PaymentMilestoneStatus.LOCKED,
+    triggerText: '入职满第 3 个月后触发',
+    sortOrder: 40,
+  },
+  {
+    key: PaymentMilestoneKey.REGULARIZATION_GIFT,
+    title: '转正后职后服务',
+    amountFen: 0,
+    status: PaymentMilestoneStatus.LOCKED,
+    triggerText: '转正后赠送，可选续费',
+    sortOrder: 50,
+  },
+];

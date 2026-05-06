@@ -1,0 +1,22 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请先登录后查看协议。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="card">
+        <view class="title">{{item.title}}</view>
+        <view class="muted">状态：{{item.status}}</view>
+        <view class="muted">Hash：{{item.contentHash}}</view>
+        <view wx:if="{{item.signatureRef}}" class="muted">签署引用：{{item.signatureRef}}</view>
+        <button wx:if="{{item.status !== 'SIGNED'}}" class="btn-primary" data-id="{{item.id}}" bindtap="sign">
+          签署占位
+        </button>
+      </view>
+    </block>
+    <view wx:if="{{!loading && !list.length && !error}}" class="card muted">暂无协议。</view>
+  </block>
+</view>

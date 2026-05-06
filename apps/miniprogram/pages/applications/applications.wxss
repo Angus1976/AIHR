@@ -1,0 +1,60 @@
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.loading {
+  margin: 24rpx;
+}
+
+.warn {
+  color: var(--warning);
+  font-size: 26rpx;
+}
+
+.app-row {
+  display: block;
+}
+
+.job-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8rpx;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+.meta .muted {
+  min-width: 0;
+  word-break: break-all;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.pitch {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  border-radius: 14rpx;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}

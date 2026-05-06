@@ -1,0 +1,20 @@
+.link-row {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.link-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.job .title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8rpx;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

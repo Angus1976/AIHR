@@ -1,0 +1,60 @@
+/* 由 app.wxss .page 负责安全区与底距；本页仅保留顶距 */
+.page {
+  padding-top: 24rpx;
+}
+.hero {
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.96), rgba(242, 223, 189, 0.4));
+  margin-bottom: 16rpx;
+}
+.eyebrow {
+  color: var(--accent);
+  font-size: 20rpx;
+  font-weight: 800;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+}
+.hero-title {
+  color: var(--primary-strong);
+  font-size: 40rpx;
+  font-weight: 800;
+  margin: 8rpx 0;
+}
+.op .title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--primary-strong);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.note {
+  margin-top: 12rpx;
+  color: var(--text);
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+.status {
+  margin-top: 12rpx;
+  color: var(--success);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+.row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+  align-items: stretch;
+}
+.row .btn-primary,
+.row .btn-secondary {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+.btn-secondary {
+  background: var(--paper);
+  color: var(--primary-strong);
+  border: 1rpx solid var(--line);
+  border-radius: 22rpx;
+}

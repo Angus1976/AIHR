@@ -1,0 +1,33 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成登录后管理面试机会。</view>
+  </view>
+
+  <block wx:else>
+    <view class="card hero">
+      <view class="eyebrow">Interview flow</view>
+      <view class="hero-title">企业面试机会</view>
+      <view class="muted">对应 6 步服务「面试确认」：平台推送后，请在此明确参加或拒绝，便于排期与服务闭环。</view>
+    </view>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{loading}}" class="muted">加载中…</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="card op">
+        <view class="title">{{item.title}}</view>
+        <view class="muted">{{item.company}}</view>
+        <view wx:if="{{item.timeText}}" class="muted">时间建议：{{item.timeText}}</view>
+        <view wx:if="{{item.note}}" class="note">{{item.note}}</view>
+        <view class="status">状态：{{item.status}}</view>
+        <view wx:if="{{item.status === 'PENDING'}}" class="row">
+          <button class="btn-primary" data-id="{{item.id}}" data-status="ACCEPTED" bindtap="respond">参加</button>
+          <button class="btn-secondary" data-id="{{item.id}}" data-status="DECLINED" bindtap="respond">暂不参加</button>
+        </view>
+      </view>
+    </block>
+    <view wx:if="{{!loading && !list.length && !error}}" class="card muted">暂无待处理机会，可在「服务」页查看 6 步路径说明。</view>
+    <view class="card">
+      <button class="btn-secondary" bindtap="goServices">返回服务路径</button>
+    </view>
+  </block>
+</view>

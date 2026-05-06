@@ -1,0 +1,21 @@
+{
+  "name": "aihr",
+  "private": true,
+  "description": "职AI通 — AI 赋能就业服务平台（小程序 + Web + API）",
+  "scripts": {
+    "dev:api": "npm run start:dev --prefix apps/api",
+    "dev:admin": "npm run dev --prefix apps/admin-web",
+    "dev:sim": "npm run dev --prefix apps/miniprogram-sim",
+    "build:api": "npm run build --prefix apps/api",
+    "build:admin": "npm run build --prefix apps/admin-web",
+    "build:sim": "npm run build --prefix apps/miniprogram-sim",
+    "build": "npm run build:api && npm run build:admin && npm run build:sim",
+    "prisma:migrate": "npm run prisma:migrate --prefix apps/api",
+    "prisma:demo": "npm run prisma:demo --prefix apps/api",
+    "docker:up": "docker compose up -d",
+    "docker:build-api": "docker compose build api"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

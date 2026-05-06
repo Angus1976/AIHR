@@ -1,0 +1,19 @@
+<view class="page">
+  <navigator class="card link-row" url="/pages/profile/profile" hover-class="none">
+    <view class="link-title">我的档案</view>
+    <view class="muted">填写技能关键词，岗位详情可显示匹配参考</view>
+  </navigator>
+  <navigator class="card link-row" url="/pages/applications/applications" hover-class="none">
+    <view class="link-title">我的投递</view>
+    <view class="muted">查看已投递岗位与处理状态</view>
+  </navigator>
+  <view wx:if="{{error}}" class="card muted warn">{{error}}</view>
+  <view wx:if="{{loading}}" class="muted">加载中…</view>
+  <block wx:for="{{list}}" wx:key="id">
+    <view class="card job" data-id="{{item.id}}" bindtap="openDetail">
+      <view class="title">{{item.title}}</view>
+      <view class="muted">{{item.enterprise.name}} · 投递 {{item._count.applications}}</view>
+    </view>
+  </block>
+  <view wx:if="{{!loading && !list.length && !error}}" class="muted card">暂无已发布岗位</view>
+</view>

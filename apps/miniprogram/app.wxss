@@ -1,0 +1,158 @@
+page {
+  --primary: #243f34;
+  --primary-strong: #172a23;
+  --accent: #b87932;
+  --accent-soft: #f2dfbd;
+  --sage: #93b69b;
+  --bg: #f4efe3;
+  --paper: #fffdf8;
+  --text: #1f2a22;
+  --muted: #6f776d;
+  --line: #ded4c4;
+  --success: #317451;
+  --success-bg: #e1efdf;
+  --warning: #9a5b25;
+  --warning-bg: #f4dfbf;
+  --button-text: #fffaf1;
+  background:
+    linear-gradient(180deg, #faf6ec 0%, var(--bg) 52%, #efe8da 100%);
+  color: var(--text);
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+view,
+text,
+button,
+input,
+textarea,
+navigator,
+label {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* 根容器：全机型避免横向撑破 + 底部 Home Indicator 安全区 */
+.page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  padding-left: max(0rpx, constant(safe-area-inset-left));
+  padding-left: max(0rpx, env(safe-area-inset-left));
+  padding-right: max(0rpx, constant(safe-area-inset-right));
+  padding-right: max(0rpx, env(safe-area-inset-right));
+  padding-bottom: calc(40rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.card {
+  margin: 24rpx;
+  padding: 32rpx;
+  background: rgba(255, 253, 248, 0.92);
+  border: 1rpx solid var(--line);
+  border-radius: 28rpx;
+  box-shadow: 0 16rpx 44rpx rgba(49, 57, 42, 0.08);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.topline,
+.title-row,
+.row,
+.meta {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.topline > view,
+.title-row > view,
+.row > view,
+.meta > view,
+.meta > text {
+  min-width: 0;
+}
+
+.btn-primary {
+  margin-top: 24rpx;
+  background: linear-gradient(180deg, #315646, var(--primary-strong));
+  color: var(--button-text);
+  border-radius: 22rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  box-shadow: 0 12rpx 30rpx rgba(36, 63, 52, 0.18);
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.warn {
+  color: var(--warning) !important;
+}
+
+.ok {
+  color: var(--success) !important;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.input,
+.area,
+.pitch,
+textarea {
+  background: rgba(255, 253, 248, 0.86);
+  border-color: var(--line) !important;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* 全局长文与代码串不换行时仍可收缩 */
+text,
+.muted,
+.desc,
+.deliverable,
+.title,
+.section-title,
+.name,
+.code,
+.status,
+.price,
+.note {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.code,
+.mono {
+  word-break: break-all;
+}
+
+image {
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+}

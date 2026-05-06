@@ -1,0 +1,13 @@
+.env
+.env.*.local
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.idea/
+.vscode/
+coverage/
+
+# 微信小程序
+apps/miniprogram/node_modules/

@@ -1,0 +1,677 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlatformRole {
+  ADMIN
+  TEACHER
+  PARTNER
+  JOB_SEEKER
+  ENTERPRISE_USER
+}
+
+enum AuditActorType {
+  PLATFORM_USER
+  SYSTEM
+}
+
+enum EnterpriseConfirmationType {
+  INTERVIEW
+  ONBOARD
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CLOSED
+  FAILED
+}
+
+enum OrderKind {
+  SEEKER_SERVICE_FEE
+  ENTERPRISE_SUBSCRIPTION
+  OTHER
+}
+
+enum SmsOtpPurpose {
+  LOGIN_PHONE
+  ENTERPRISE_CONTACT_VERIFY
+}
+
+enum JobApplicationStatus {
+  SUBMITTED
+  REVIEWING
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum InterviewOpportunityStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+enum PartnerApplicationStatus {
+  SUBMITTED
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+enum ContractStatus {
+  DRAFT
+  SIGNED
+  CANCELLED
+}
+
+enum RefundRequestStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+enum SeekerServicePlanStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum SeekerServiceStepKey {
+  PRE_CAREER_PLANNING
+  RESUME_OPTIMIZATION
+  INTERVIEW_COACHING
+  INTERVIEW_CONFIRMATION
+  POST_OFFER_COACHING
+  POST_CONVERSION_PLANNING
+}
+
+enum MockInterviewSessionStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  CANCELLED
+}
+
+enum MockInterviewTransport {
+  TENCENT_MEETING
+  TRTC
+  HYBRID
+}
+
+enum MockInterviewSceneMode {
+  STANDARD
+  VR
+}
+
+enum SeekerServiceStepStatus {
+  LOCKED
+  NOT_STARTED
+  IN_PROGRESS
+  DELIVERED
+  CONFIRMED
+}
+
+enum ServiceProviderType {
+  PLATFORM
+  PARTNER
+  AI_ASSISTED
+  HYBRID
+}
+
+enum PaymentMilestoneKey {
+  SIGN_CONTRACT
+  OFFER_DEPOSIT
+  MONTH_2_BALANCE
+  MONTH_3_BALANCE
+  REGULARIZATION_GIFT
+  RENEWAL
+}
+
+enum PaymentMilestoneStatus {
+  LOCKED
+  PAYABLE
+  PAID
+  WAIVED
+  REFUNDED
+}
+
+model Tenant {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  logoUrl      String?
+  primaryColor String?
+  accentColor  String?
+  welcomeText  String?
+  wxMiniAppId  String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users       User[]
+  wxMiniUsers WxMiniUser[]
+  enterprises Enterprise[]
+  jobPostings             JobPosting[]
+  auditLogs               AuditLog[]
+  enterpriseConfirmations EnterpriseConfirmation[]
+  orders                  Order[]
+  smsOtps                 SmsOtp[]
+  jobApplications         JobApplication[]
+  aiLlmRoutes             AiLlmRoute[]
+  aiPromptTemplates       AiPromptTemplate[]
+  jobSeekerProfiles       JobSeekerProfile[]
+  serviceProducts         ServiceProduct[]
+  userConsents            UserConsent[]
+  partnerApplications     PartnerApplication[]
+  notifications           UserNotification[]
+  complianceTemplates     ComplianceTemplate[]
+  contractAgreements      ContractAgreement[]
+  refundRequests          RefundRequest[]
+  seekerServicePlans      SeekerServicePlan[]
+  interviewOpportunities  InterviewOpportunity[]
+  serviceStepInteractions ServiceStepInteraction[]
+  mockInterviewSessions   MockInterviewSession[]
+}
+
+model User {
+  id           String       @id @default(cuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id])
+  email        String?
+  phone        String?
+  passwordHash String?
+  displayName  String
+  role         PlatformRole @default(JOB_SEEKER)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  wxMiniUsers            WxMiniUser[]
+  auditLogs              AuditLog[]
+  enterpriseConfirmations EnterpriseConfirmation[]
+  orders                    Order[]
+  jobApplications           JobApplication[]
+  jobSeekerProfile          JobSeekerProfile?
+  consents                  UserConsent[]
+  partnerApplications       PartnerApplication[]
+  notifications             UserNotification[]
+  contractAgreements        ContractAgreement[]
+  refundRequests            RefundRequest[]
+  seekerServicePlans        SeekerServicePlan[]
+  interviewOpportunities    InterviewOpportunity[] @relation("InterviewOpportunitySeeker")
+  pushedInterviewOpportunities InterviewOpportunity[] @relation("InterviewOpportunityPusher")
+  serviceStepInteractions   ServiceStepInteraction[]
+  mockInterviewSessions     MockInterviewSession[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, phone])
+}
+
+model WxMiniUser {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  openid     String
+  unionid    String?
+  sessionKey String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([tenantId, openid])
+}
+
+model Enterprise {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  name         String
+  contactEmail String?
+  contactPhone String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  jobPostings      JobPosting[]
+  confirmations    EnterpriseConfirmation[]
+  contractAgreements ContractAgreement[]
+}
+
+model PartnerApplication {
+  id              String                   @id @default(cuid())
+  tenantId        String
+  tenant          Tenant                   @relation(fields: [tenantId], references: [id])
+  submittedById   String
+  submittedBy     User                     @relation(fields: [submittedById], references: [id], onDelete: Cascade)
+  orgName         String
+  contactName     String
+  contactPhone    String?
+  contactEmail    String?
+  category        String
+  qualification   String?
+  courseSummary   String?
+  status          PartnerApplicationStatus @default(SUBMITTED)
+  reviewNote      String?
+  reviewedById    String?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  @@index([tenantId, status, createdAt])
+  @@index([tenantId, submittedById])
+}
+
+model JobPosting {
+  id            String    @id @default(cuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  enterpriseId  String
+  enterprise    Enterprise @relation(fields: [enterpriseId], references: [id])
+  title         String
+  jdMarkdown    String?
+  status        String    @default("DRAFT")
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  applications JobApplication[]
+  interviewOpportunities InterviewOpportunity[]
+}
+
+model JobApplication {
+  id             String               @id @default(cuid())
+  tenantId       String
+  tenant         Tenant               @relation(fields: [tenantId], references: [id])
+  jobPostingId   String
+  jobPosting     JobPosting           @relation(fields: [jobPostingId], references: [id])
+  seekerUserId   String
+  seeker         User                 @relation(fields: [seekerUserId], references: [id])
+  status         JobApplicationStatus @default(SUBMITTED)
+  pitch          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  contractAgreements ContractAgreement[]
+
+  @@unique([jobPostingId, seekerUserId])
+  @@index([tenantId, jobPostingId])
+  @@index([tenantId, seekerUserId])
+}
+
+model InterviewOpportunity {
+  id           String                     @id @default(cuid())
+  tenantId     String
+  tenant       Tenant                     @relation(fields: [tenantId], references: [id])
+  jobPostingId String
+  jobPosting   JobPosting                 @relation(fields: [jobPostingId], references: [id])
+  seekerUserId String
+  seeker       User                       @relation("InterviewOpportunitySeeker", fields: [seekerUserId], references: [id], onDelete: Cascade)
+  pushedById   String
+  pushedBy     User                       @relation("InterviewOpportunityPusher", fields: [pushedById], references: [id])
+  status       InterviewOpportunityStatus @default(PENDING)
+  scheduledAt  DateTime?
+  note         String?
+  respondedAt  DateTime?
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+
+  @@unique([jobPostingId, seekerUserId])
+  @@index([tenantId, seekerUserId, status, createdAt])
+  @@index([tenantId, jobPostingId, status])
+}
+
+model AuditLog {
+  id             String         @id @default(cuid())
+  tenantId       String
+  tenant         Tenant         @relation(fields: [tenantId], references: [id])
+  performedById  String?
+  performedBy    User?          @relation(fields: [performedById], references: [id])
+  actorType      AuditActorType @default(PLATFORM_USER)
+  onBehalfOfType String
+  onBehalfOfId   String
+  action         String
+  metadata       Json?
+  createdAt      DateTime       @default(now())
+}
+
+model Order {
+  id                  String      @id @default(cuid())
+  tenantId            String
+  tenant              Tenant      @relation(fields: [tenantId], references: [id])
+  payerUserId         String
+  payer               User        @relation(fields: [payerUserId], references: [id])
+  kind                OrderKind
+  amountFen           Int
+  currency            String      @default("CNY")
+  description         String?
+  status              OrderStatus @default(PENDING)
+  outTradeNo          String      @unique
+  wechatPrepayId      String?
+  wechatTransactionId String?
+  wechatTradeState    String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  contractAgreements  ContractAgreement[]
+  refundRequests      RefundRequest[]
+  servicePaymentMilestones ServicePaymentMilestone[]
+}
+
+model SeekerServicePlan {
+  id              String                  @id @default(cuid())
+  tenantId        String
+  tenant          Tenant                  @relation(fields: [tenantId], references: [id])
+  seekerUserId    String
+  seeker          User                    @relation(fields: [seekerUserId], references: [id], onDelete: Cascade)
+  status          SeekerServicePlanStatus @default(ACTIVE)
+  targetRole      String?
+  salaryMinFen    Int?
+  salaryMaxFen    Int?
+  signedContractId String?
+  summary         String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  steps      SeekerServiceStep[]
+  milestones ServicePaymentMilestone[]
+  mockInterviewSessions MockInterviewSession[]
+
+  @@unique([tenantId, seekerUserId])
+  @@index([tenantId, status, updatedAt])
+}
+
+model SeekerServiceStep {
+  id                String                  @id @default(cuid())
+  planId            String
+  plan              SeekerServicePlan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+  key               SeekerServiceStepKey
+  title             String
+  valueProposition  String
+  providerType      ServiceProviderType
+  status            SeekerServiceStepStatus @default(NOT_STARTED)
+  sortOrder         Int
+  checklist         Json?
+  deliverableSummary String?
+  partnerOrgName    String?
+  updatedAt         DateTime                @updatedAt
+  createdAt         DateTime                @default(now())
+  interactions      ServiceStepInteraction[]
+
+  @@unique([planId, key])
+  @@index([planId, sortOrder])
+}
+
+model ServiceStepInteraction {
+  id            String            @id @default(cuid())
+  tenantId      String
+  tenant        Tenant            @relation(fields: [tenantId], references: [id])
+  stepId        String
+  step          SeekerServiceStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  requestedById String
+  requestedBy   User              @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+  promptKey     String
+  inputText     String?
+  outputText    String
+  vendor        String
+  modelName     String?
+  routeId       String?
+  feedbackRating Int?
+  feedbackText  String?
+  feedbackAt    DateTime?
+  createdAt     DateTime          @default(now())
+
+  @@index([tenantId, stepId, createdAt])
+  @@index([tenantId, requestedById, createdAt])
+}
+
+/// 模拟面试：通信侧可对接腾讯会议 / TRTC；会中引导、记录与复盘说明可由平台配置承载。
+model MockInterviewSession {
+  id              String                      @id @default(cuid())
+  tenantId        String
+  tenant          Tenant                      @relation(fields: [tenantId], references: [id])
+  seekerUserId    String
+  seeker          User                        @relation(fields: [seekerUserId], references: [id], onDelete: Cascade)
+  servicePlanId   String?
+  servicePlan     SeekerServicePlan?          @relation(fields: [servicePlanId], references: [id], onDelete: SetNull)
+  stepKey         SeekerServiceStepKey        @default(INTERVIEW_COACHING)
+  status          MockInterviewSessionStatus   @default(SCHEDULED)
+  meetingId       String?
+  joinUrl         String?
+  subject         String?
+  startTime       DateTime?
+  endTime         DateTime?
+  robotSideNote   String?
+  provider        String                      @default("TENCENT_MEETING")
+  transport       MockInterviewTransport      @default(TENCENT_MEETING)
+  sceneMode       MockInterviewSceneMode      @default(STANDARD)
+  interviewerRole String?
+  interviewerRequirements String?
+  evaluationFocus Json?
+  antiAssistRules Json?
+  trtcRoomId      String?
+  trtcUserSig     String?
+  trtcSdkAppId    String?
+  vrSceneKey      String?
+  vrSceneName     String?
+  vrSceneUrl      String?
+  sceneConfig     Json?
+  rawResponse     Json?
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
+
+  @@index([tenantId, seekerUserId, createdAt])
+  @@index([tenantId, status])
+}
+
+model ServicePaymentMilestone {
+  id          String                 @id @default(cuid())
+  planId      String
+  plan        SeekerServicePlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  key         PaymentMilestoneKey
+  title       String
+  amountFen   Int
+  status      PaymentMilestoneStatus @default(LOCKED)
+  triggerText String
+  orderId     String?
+  order       Order?                 @relation(fields: [orderId], references: [id])
+  sortOrder   Int
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@unique([planId, key])
+  @@index([planId, sortOrder])
+}
+
+model ComplianceTemplate {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  purpose     String
+  version     String
+  title       String
+  content     String
+  contentHash String
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  contracts   ContractAgreement[]
+
+  @@unique([tenantId, purpose, version])
+  @@index([tenantId, purpose, enabled])
+}
+
+model ContractAgreement {
+  id                 String           @id @default(cuid())
+  tenantId           String
+  tenant             Tenant           @relation(fields: [tenantId], references: [id])
+  userId             String
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterpriseId        String?
+  enterprise          Enterprise?      @relation(fields: [enterpriseId], references: [id])
+  orderId             String?
+  order               Order?           @relation(fields: [orderId], references: [id])
+  jobApplicationId    String?
+  jobApplication      JobApplication?  @relation(fields: [jobApplicationId], references: [id])
+  templateId          String?
+  template            ComplianceTemplate? @relation(fields: [templateId], references: [id])
+  title              String
+  contentHash         String
+  status             ContractStatus   @default(DRAFT)
+  signatureProvider   String?
+  signatureStatus     String?
+  signatureRef        String?
+  signedAt            DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([tenantId, userId, status, createdAt])
+  @@index([tenantId, enterpriseId, status, createdAt])
+}
+
+model RefundRequest {
+  id             String              @id @default(cuid())
+  tenantId       String
+  tenant         Tenant              @relation(fields: [tenantId], references: [id])
+  orderId        String
+  order          Order               @relation(fields: [orderId], references: [id])
+  requestedById  String
+  requestedBy    User                @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+  amountFen      Int
+  reason         String?
+  status         RefundRequestStatus @default(SUBMITTED)
+  reviewNote     String?
+  reviewedById   String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([tenantId, orderId, status])
+  @@index([tenantId, requestedById, createdAt])
+}
+
+model ServiceProduct {
+  id          String     @id @default(cuid())
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  code        String
+  name        String
+  audience    String
+  orderKind   OrderKind
+  amountFen   Int
+  currency    String     @default("CNY")
+  description String?
+  enabled     Boolean    @default(true)
+  sortOrder   Int        @default(100)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId, audience, enabled])
+}
+
+model UserConsent {
+  id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose     String
+  version     String
+  contentHash String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, userId, purpose, createdAt])
+}
+
+model UserNotification {
+  id        String    @id @default(cuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  category  String
+  metadata  Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([tenantId, userId, readAt, createdAt])
+}
+
+model SmsOtp {
+  id             String          @id @default(cuid())
+  tenantId       String?
+  tenant         Tenant?         @relation(fields: [tenantId], references: [id])
+  phone          String
+  purpose        SmsOtpPurpose
+  codeHash       String
+  expiresAt      DateTime
+  consumedAt     DateTime?
+  verifyAttempts Int             @default(0)
+  createdAt      DateTime        @default(now())
+
+  @@index([phone, purpose, createdAt])
+}
+
+model AiLlmRoute {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  scenario   String   @default("default")
+  provider   String
+  modelName  String
+  baseUrl    String?
+  apiKeyEnv  String?
+  weight     Int      @default(100)
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tenantId, scenario, enabled])
+}
+
+model AiPromptTemplate {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  key       String
+  title     String?
+  body      String
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, key])
+}
+
+model JobSeekerProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  headline       String?
+  skillsText     String?
+  resumeMarkdown String?
+  createdAt      DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EnterpriseConfirmation {
+  id             String                     @id @default(cuid())
+  tenantId       String
+  tenant         Tenant                     @relation(fields: [tenantId], references: [id])
+  enterpriseId   String
+  enterprise     Enterprise                 @relation(fields: [enterpriseId], references: [id])
+  type           EnterpriseConfirmationType
+  jobPostingId   String?
+  note           String?
+  evidenceRef    String?
+  performedById  String
+  performedBy    User                       @relation(fields: [performedById], references: [id])
+  createdAt      DateTime                   @default(now())
+}

@@ -1,0 +1,45 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成微信登录后再编辑档案。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{msg}}" class="card ok">{{msg}}</view>
+
+    <view class="card">
+      <view class="section-title">一句话亮点</view>
+      <input
+        class="input"
+        placeholder="例如：3 年前端，熟悉 Vue / 小程序"
+        value="{{headline}}"
+        bindinput="onHeadline"
+      />
+    </view>
+
+    <view class="card">
+      <view class="section-title">技能关键词</view>
+      <view class="muted tip">用逗号、顿号或换行分隔，便于与岗位 JD 做粗匹配。</view>
+      <textarea
+        class="area"
+        placeholder="Vue, NestJS, PostgreSQL…"
+        value="{{skillsText}}"
+        bindinput="onSkills"
+      />
+    </view>
+
+    <view class="card">
+      <view class="section-title">经历摘要（可选）</view>
+      <textarea
+        class="area tall"
+        placeholder="可粘贴简历要点或 Markdown"
+        value="{{resumeMarkdown}}"
+        bindinput="onResume"
+      />
+    </view>
+
+    <button class="btn-primary" loading="{{saving || loading}}" bindtap="save">保存档案</button>
+  </block>
+</view>

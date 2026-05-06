@@ -1,0 +1,313 @@
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.hero {
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.96), rgba(242, 223, 189, 0.54));
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 20rpx;
+  font-weight: 800;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+  margin-bottom: 14rpx;
+}
+
+.hero-title {
+  color: var(--primary-strong);
+  font-size: 48rpx;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 14rpx;
+}
+
+.progress {
+  margin-top: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12rpx 16rpx;
+  color: var(--primary-strong);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+.progress text {
+  min-width: 0;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.section-label {
+  margin: 32rpx 28rpx 8rpx;
+  color: var(--accent);
+  font-size: 22rpx;
+  font-weight: 800;
+  letter-spacing: 3rpx;
+}
+
+.loading {
+  margin: 24rpx;
+}
+
+.warn {
+  color: var(--warning);
+  font-size: 26rpx;
+}
+
+.ok {
+  color: var(--success);
+  font-size: 26rpx;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24rpx;
+}
+.topline > view:first-child {
+  min-width: 0;
+  flex: 1;
+}
+.topline .name,
+.topline .step-no {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.topline .status {
+  max-width: 40%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topline .price {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  white-space: nowrap;
+}
+
+.step-no {
+  color: var(--accent);
+  font-size: 22rpx;
+  font-weight: 800;
+  margin-bottom: 6rpx;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.code {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+}
+
+.price {
+  color: var(--accent);
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.desc {
+  margin-top: 18rpx;
+}
+
+.status {
+  flex: 0 0 auto;
+  height: 42rpx;
+  padding: 0 16rpx;
+  border-radius: 999rpx;
+  background: var(--accent-soft);
+  color: var(--primary-strong);
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 42rpx;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.meta text {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.checklist {
+  margin-top: 16rpx;
+}
+
+.deliverable {
+  margin-top: 16rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: rgba(242, 223, 189, 0.38);
+  color: var(--primary-strong);
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.ai-output {
+  background: rgba(147, 182, 155, 0.22);
+}
+
+.step-action {
+  margin-top: 18rpx;
+}
+
+.feedback-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.mini-feedback {
+  margin: 0;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: var(--primary);
+  color: var(--button-text);
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.mini-feedback.ghost {
+  background: var(--paper);
+  color: var(--primary-strong);
+  border: 1rpx solid var(--line);
+}
+
+.btn-secondary {
+  margin-top: 18rpx;
+  background: var(--paper);
+  color: var(--primary-strong);
+  border: 1rpx solid var(--line);
+  border-radius: 22rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+}
+
+.milestone {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  align-items: flex-start;
+}
+.milestone > view:first-child {
+  min-width: 0;
+  flex: 1;
+}
+.milestone .name {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.pay-side {
+  text-align: right;
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: 48%;
+}
+
+.milestone-pay {
+  width: 100%;
+}
+
+.consent {
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.agree {
+  display: flex;
+  gap: 12rpx;
+  align-items: flex-start;
+  color: var(--text);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.ensure-plan .input {
+  margin-top: 16rpx;
+}
+
+.ensure-plan .area {
+  margin-top: 12rpx;
+  min-height: 120rpx;
+}
+
+.ensure-plan .btn-primary {
+  margin-top: 20rpx;
+}
+
+.complement-box {
+  margin-top: 16rpx;
+}
+
+.small-label {
+  font-size: 22rpx;
+  margin-bottom: 8rpx;
+}
+
+.step-note {
+  min-height: 100rpx;
+}
+
+.flow-panel {
+  margin-top: 18rpx;
+  padding: 20rpx;
+  border-radius: 18rpx;
+  border: 1rpx solid rgba(36, 63, 52, 0.12);
+  background: rgba(255, 253, 248, 0.85);
+}
+.flow-title {
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--primary-strong);
+  margin-bottom: 8rpx;
+}
+.flow-text {
+  line-height: 1.55;
+  font-size: 24rpx;
+}
+.flow-btn {
+  margin-top: 16rpx;
+  width: 100%;
+  background: var(--paper);
+  color: var(--primary-strong);
+  border: 1rpx solid var(--line);
+  border-radius: 22rpx;
+  font-size: 26rpx;
+}
+.mock-block {
+  margin-top: 12rpx;
+  padding: 16rpx;
+  border-radius: 14rpx;
+  background: rgba(147, 182, 155, 0.15);
+  font-size: 24rpx;
+  color: var(--primary-strong);
+}
+.mock-block .tiny {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  line-height: 1.45;
+}

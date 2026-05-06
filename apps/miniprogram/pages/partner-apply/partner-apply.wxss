@@ -1,0 +1,42 @@
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.input,
+.area {
+  width: 100%;
+  margin-bottom: 16rpx;
+  padding: 18rpx 22rpx;
+  border: 1px solid var(--line);
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  font-size: 26rpx;
+}
+
+.area {
+  min-height: 180rpx;
+}
+
+.warn {
+  color: var(--warning);
+  font-size: 26rpx;
+}
+
+.ok {
+  color: var(--success);
+  font-size: 26rpx;
+}
+
+.row {
+  padding: 18rpx 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8rpx;
+}

@@ -1,0 +1,78 @@
+<view class="page">
+  <view class="hero card">
+    <view class="eyebrow">Talent Service OS</view>
+    <view class="title">职AI通</view>
+    <view class="subtitle muted">从岗位匹配、协议签署到服务付费，一站式就业服务工作流。</view>
+  </view>
+
+  <navigator class="card link-card" url="/pages/jobs/jobs" hover-class="none">
+    <view class="section-title">在招岗位</view>
+    <view class="muted">浏览已发布岗位并投递</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/profile/profile" hover-class="none">
+    <view class="section-title">我的档案</view>
+    <view class="muted">填写技能与经历摘要，岗位详情可显示匹配参考</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/applications/applications" hover-class="none">
+    <view class="section-title">我的投递</view>
+    <view class="muted">查看已投递岗位、状态与留言</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/interview-ops/interview-ops" hover-class="none">
+    <view class="section-title">面试机会确认</view>
+    <view class="muted">平台推送企业面试机会后，在此确认参加或拒绝（6 步服务之「面试确认」）</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/notifications/notifications" hover-class="none">
+    <view class="title-row">
+      <view class="section-title">消息通知</view>
+      <text wx:if="{{unreadCount}}" class="badge">{{unreadCount}}</text>
+    </view>
+    <view class="muted">查看投递状态、伙伴审核等平台通知</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/contracts/contracts" hover-class="none">
+    <view class="section-title">我的协议</view>
+    <view class="muted">查看并签署平台生成的服务协议</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/billing/billing" hover-class="none">
+    <view class="section-title">订单与退款</view>
+    <view class="muted">查看订单并提交退款申请</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/services/services" hover-class="none">
+    <view class="section-title">服务与付费</view>
+    <view class="muted">查看配置化服务产品，完成同意留痕与微信支付预下单</view>
+  </navigator>
+
+  <navigator class="card link-card" url="/pages/partner-apply/partner-apply" hover-class="none">
+    <view class="section-title">伙伴入驻</view>
+    <view class="muted">培训机构、猎头或服务商提交资质与服务摘要</view>
+  </navigator>
+
+  <view class="card">
+    <view class="section-title">服务可用性</view>
+    <view wx:if="{{error}}" class="muted warn">{{error}}</view>
+    <block wx:else>
+      <view class="muted">GET /v1/health</view>
+      <text class="code">{{health ? JSON.stringify(health) : '加载中…'}}</text>
+    </block>
+    <button class="btn-primary" bindtap="checkHealth">重新检测</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">微信登录</view>
+    <view class="muted">调用 wx.login 后向服务端换取 JWT（需配置 AppSecret）。</view>
+    <button class="btn-primary" loading="{{logging}}" bindtap="onLogin">一键登录</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">支付预下单（联调）</view>
+    <view class="muted">先登录；配置商户后走 live 并调起 wx.requestPayment，否则为 stub。</view>
+    <button class="btn-primary" loading="{{paying}}" bindtap="onPaySmoke">1 分测试预下单</button>
+    <view wx:if="{{payResult}}" class="muted" style="margin-top:16rpx">{{payResult}}</view>
+  </view>
+</view>

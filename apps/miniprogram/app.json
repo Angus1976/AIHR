@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/jobs/jobs",
+    "pages/job-detail/job-detail",
+    "pages/profile/profile",
+    "pages/applications/applications",
+    "pages/services/services",
+    "pages/interview-ops/interview-ops",
+    "pages/partner-apply/partner-apply",
+    "pages/notifications/notifications",
+    "pages/contracts/contracts",
+    "pages/billing/billing"
+  ],
+  "window": {
+    "navigationBarTitleText": "职AI通",
+    "navigationBarBackgroundColor": "#243F34",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F4EFE3"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

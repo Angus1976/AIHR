@@ -1,0 +1,36 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成微信登录后提交伙伴入驻申请。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{msg}}" class="card ok">{{msg}}</view>
+
+    <view class="card">
+      <view class="section-title">入驻信息</view>
+      <input class="input" placeholder="机构名称" value="{{orgName}}" data-key="orgName" bindinput="bind" />
+      <input class="input" placeholder="联系人" value="{{contactName}}" data-key="contactName" bindinput="bind" />
+      <input class="input" placeholder="联系电话" value="{{contactPhone}}" data-key="contactPhone" bindinput="bind" />
+      <input class="input" placeholder="联系邮箱" value="{{contactEmail}}" data-key="contactEmail" bindinput="bind" />
+      <input class="input" placeholder="类型，例如：培训机构/猎头/服务商" value="{{category}}" data-key="category" bindinput="bind" />
+      <textarea class="area" placeholder="资质说明" value="{{qualification}}" data-key="qualification" bindinput="bind" />
+      <textarea class="area" placeholder="课程/服务摘要" value="{{courseSummary}}" data-key="courseSummary" bindinput="bind" />
+      <button class="btn-primary" loading="{{loading}}" bindtap="submit">提交入驻申请</button>
+    </view>
+
+    <view class="card">
+      <view class="section-title">我的申请</view>
+      <block wx:for="{{mine}}" wx:key="id">
+        <view class="row">
+          <view class="name">{{item.orgName}}</view>
+          <view class="muted">{{item.category}} · {{item.status}}</view>
+          <view wx:if="{{item.reviewNote}}" class="muted">审核备注：{{item.reviewNote}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!mine.length && !loading}}" class="muted">暂无申请记录。</view>
+    </view>
+  </block>
+</view>

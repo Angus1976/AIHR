@@ -1,0 +1,37 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成微信登录后查看通知。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{loading}}" class="muted loading">加载中…</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="card notice {{item.unread ? 'unread' : ''}}">
+        <view class="topline">
+          <view class="title">{{item.title}}</view>
+          <view class="muted">{{item.createdAtText}}</view>
+        </view>
+        <view class="body">{{item.body}}</view>
+        <view class="meta">
+          <text class="tag">{{item.category}}</text>
+          <button
+            wx:if="{{item.unread}}"
+            class="mini-btn"
+            data-id="{{item.id}}"
+            bindtap="markRead"
+          >
+            标为已读
+          </button>
+        </view>
+      </view>
+    </block>
+
+    <view wx:if="{{!loading && !list.length && !error}}" class="card muted">
+      暂无消息通知。
+    </view>
+  </block>
+</view>

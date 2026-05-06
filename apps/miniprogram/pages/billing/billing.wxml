@@ -1,0 +1,33 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请先登录后查看订单。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view class="card">
+      <view class="section-title">我的订单</view>
+      <block wx:for="{{orders}}" wx:key="id">
+        <view class="row">
+          <view class="title">{{item.description || item.kind}}</view>
+          <view class="muted">{{item.status}} · {{item.amountFen}} 分</view>
+          <button class="mini-btn" data-id="{{item.id}}" data-amount="{{item.amountFen}}" bindtap="refund">
+            申请退款
+          </button>
+        </view>
+      </block>
+      <view wx:if="{{!orders.length && !loading}}" class="muted">暂无订单。</view>
+    </view>
+    <view class="card">
+      <view class="section-title">退款申请</view>
+      <block wx:for="{{refunds}}" wx:key="id">
+        <view class="row">
+          <view class="title">{{item.amountFen}} 分</view>
+          <view class="muted">{{item.status}} · {{item.reason || '无原因'}}</view>
+        </view>
+      </block>
+      <view wx:if="{{!refunds.length && !loading}}" class="muted">暂无退款申请。</view>
+    </view>
+  </block>
+</view>

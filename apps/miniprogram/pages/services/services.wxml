@@ -1,0 +1,194 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成微信登录后查看服务与付费节点。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{payResult}}" class="card ok">{{payResult}}</view>
+    <view wx:if="{{loading}}" class="muted loading">加载中…</view>
+
+    <view class="hero card">
+      <view class="eyebrow">6-Step Employment Service</view>
+      <view class="hero-title">6 步就业服务路径</view>
+      <view class="muted">
+        平台通过职前规划、简历优化、面试辅导、面试确认、职后辅导、职后规划，帮助你从求职准备走到入职成长；服务进度透明，按结果节点付费。
+      </view>
+      <view class="progress">
+        <text>{{progressText}}</text>
+        <text>{{plan ? '已生成专属服务计划' : '暂无专属服务计划'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!plan && !loading}}" class="card ensure-plan">
+      <view class="section-title">开启 6 步服务</view>
+      <view class="muted">首次使用可在此生成个人服务计划；也可在「档案」完善经历后，再获取更贴合个人情况的服务建议。</view>
+      <input class="input" placeholder="目标岗位（可选）" value="{{ensureTargetRole}}" bindinput="onEnsureTargetRole" />
+      <textarea
+        class="area"
+        placeholder="计划备注（可选）"
+        value="{{ensureSummary}}"
+        bindinput="onEnsureSummary"
+        maxlength="2000"
+        auto-height
+      />
+      <button class="btn-primary" loading="{{loading}}" bindtap="ensureMyPlan">生成我的服务计划</button>
+    </view>
+
+    <view wx:if="{{steps.length}}" class="section-label">服务环节</view>
+    <block wx:for="{{steps}}" wx:key="id">
+      <view class="card step">
+        <view class="topline">
+          <view>
+            <view class="step-no">{{item.no}}</view>
+            <view class="name">{{item.title}}</view>
+          </view>
+          <view class="status">{{item.statusText}}</view>
+        </view>
+        <view class="muted desc">{{item.valueProposition}}</view>
+        <view class="meta">
+          <text>{{item.providerText}}</text>
+          <text wx:if="{{item.partnerOrgName}}">{{item.partnerOrgName}}</text>
+        </view>
+        <view wx:if="{{item.checklistText}}" class="muted checklist">{{item.checklistText}}</view>
+        <view wx:if="{{item.flowPre}}" class="flow-panel">
+          <view class="flow-title">求职流程 · 建档与方向</view>
+          <view class="muted flow-text">请先完善「档案」中的经历与技能，再获取本环节服务建议。</view>
+          <button class="btn-secondary flow-btn" bindtap="goProfile">去完善档案</button>
+        </view>
+        <view wx:if="{{item.flowResume}}" class="flow-panel">
+          <view class="flow-title">求职流程 · 简历材料</view>
+          <view class="muted flow-text">建议在档案中写好目标岗位与经历摘要；平台将围绕「诊断—改稿—定稿」提供可执行建议。</view>
+        </view>
+        <view wx:if="{{item.flowCoach}}" class="flow-panel">
+          <view class="flow-title">腾讯会议 · 模拟面试</view>
+          <view class="muted flow-text">通信使用腾讯会议客户端；会中引导、记录与复盘说明通过会议侧能力承载。未开启真实接口时链接为占位。</view>
+          <view wx:if="{{item.mockLatest}}" class="mock-block">
+            <view>会议标识：{{item.mockLatest.meetingId}}</view>
+            <view class="muted tiny">方式：{{item.mockLatest.transportText}} · 场景：{{item.mockLatest.sceneText}}</view>
+            <view wx:if="{{item.mockLatest.trtcRoomId}}" class="muted tiny">实时房间：{{item.mockLatest.trtcRoomId}}</view>
+            <view class="muted tiny">独立作答：{{item.mockLatest.independentRules}}</view>
+            <view class="muted tiny">{{item.mockLatest.safeNote}}</view>
+          </view>
+          <button class="btn-secondary flow-btn" loading="{{loading}}" bindtap="bookMockInterview">预约一场模拟面试</button>
+        </view>
+        <view wx:if="{{item.flowConfirm}}" class="flow-panel">
+          <view class="flow-title">求职流程 · 企业面试机会</view>
+          <view class="muted flow-text">平台推送岗位机会后，请在本页外「面试机会」列表确认参加或拒绝。</view>
+          <button class="btn-secondary flow-btn" bindtap="goInterviewOps">打开面试机会确认</button>
+        </view>
+        <view wx:if="{{item.status !== 'LOCKED'}}" class="complement-box">
+          <view class="muted small-label">本环节补充说明（可选，将用于完善服务建议）</view>
+          <textarea
+            class="area step-note"
+            placeholder="如：更具体的困惑、想重点解决的问题…"
+            data-sid="{{item.id}}"
+            value="{{complementByStep[item.id]}}"
+            bindinput="onComplementInput"
+            maxlength="2000"
+            auto-height
+          />
+        </view>
+        <view wx:if="{{item.deliverableSummary}}" class="deliverable">{{item.deliverableSummary}}</view>
+        <view wx:if="{{item.latestOutput}}" class="deliverable ai-output">{{item.latestOutput}}</view>
+        <view wx:if="{{item.latestInteractionId}}" class="feedback-row">
+          <button
+            class="mini-feedback"
+            data-step-id="{{item.id}}"
+            data-interaction-id="{{item.latestInteractionId}}"
+            data-rating="5"
+            bindtap="feedbackStep"
+          >
+            有帮助
+          </button>
+          <button
+            class="mini-feedback ghost"
+            data-step-id="{{item.id}}"
+            data-interaction-id="{{item.latestInteractionId}}"
+            data-rating="2"
+            bindtap="feedbackStep"
+          >
+            需改进
+          </button>
+          <text wx:if="{{item.latestFeedbackRating}}" class="muted">已反馈 {{item.latestFeedbackRating}} 分</text>
+        </view>
+        <button
+          wx:if="{{item.status !== 'LOCKED'}}"
+          class="btn-primary step-action"
+          data-id="{{item.id}}"
+          bindtap="requestStep"
+        >
+          获取该环节服务建议
+        </button>
+        <button
+          wx:if="{{item.canConfirm}}"
+          class="btn-secondary step-action"
+          data-id="{{item.id}}"
+          bindtap="confirmStep"
+        >
+          确认该环节成果
+        </button>
+      </view>
+    </block>
+
+    <view wx:if="{{milestones.length}}" class="section-label">签约与付款节点</view>
+    <block wx:for="{{milestones}}" wx:key="id">
+      <view class="card milestone">
+        <view>
+          <view class="name">{{item.title}}</view>
+          <view class="muted">{{item.triggerText}}</view>
+        </view>
+        <view class="pay-side">
+          <view class="price">{{item.amountText}}</view>
+          <view class="status">{{item.statusText}}</view>
+        </view>
+        <button
+          wx:if="{{item.canPay}}"
+          class="btn-primary milestone-pay"
+          loading="{{paying}}"
+          data-id="{{item.id}}"
+          bindtap="payMilestone"
+        >
+          支付该节点
+        </button>
+      </view>
+    </block>
+
+    <view class="section-label">服务产品</view>
+    <block wx:for="{{list}}" wx:key="id">
+      <view class="card product">
+        <view class="topline">
+          <view>
+            <view class="name">{{item.name}}</view>
+            <view class="muted code">{{item.code}}</view>
+          </view>
+          <view class="price">{{item.priceText}}</view>
+        </view>
+        <view wx:if="{{item.description}}" class="muted desc">{{item.description}}</view>
+        <button
+          class="btn-primary"
+          loading="{{paying}}"
+          data-id="{{item.id}}"
+          bindtap="pay"
+        >
+          同意并发起支付
+        </button>
+      </view>
+    </block>
+
+    <view wx:if="{{!loading && !list.length && !error}}" class="card muted">
+      暂无已启用服务产品。
+    </view>
+
+    <view class="card consent">
+      <checkbox-group bindchange="onAgree">
+        <label class="agree">
+          <checkbox value="agree" checked="{{agreed}}" />
+          <text>{{consentText}}</text>
+        </label>
+      </checkbox-group>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,90 @@
+networks:
+  aihr_app_internal:
+    name: aihr-app-internal
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aihr-app-postgres
+    restart: unless-stopped
+    networks:
+      - aihr_app_internal
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aihr_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aihr_local_change_me}
+      POSTGRES_DB: ${POSTGRES_DB:-aihr_app}
+    ports:
+      - "${POSTGRES_PORT:-25432}:5432"
+    volumes:
+      - aihr_app_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: aihr-app-redis
+    restart: unless-stopped
+    networks:
+      - aihr_app_internal
+    ports:
+      - "${REDIS_PORT:-26379}:6379"
+    volumes:
+      - aihr_app_redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: aihr-app-api
+    restart: unless-stopped
+    networks:
+      - aihr_app_internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-2mb}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aihr_app}:${POSTGRES_PASSWORD:-aihr_local_change_me}@postgres:5432/${POSTGRES_DB:-aihr_app}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      DEFAULT_TENANT_SLUG: ${DEFAULT_TENANT_SLUG:-default}
+      WECHAT_MINI_APP_ID: ${WECHAT_MINI_APP_ID:-}
+      WECHAT_MINI_APP_SECRET: ${WECHAT_MINI_APP_SECRET:-}
+      LOCAL_SIMULATOR_ENABLED: ${LOCAL_SIMULATOR_ENABLED:-true}
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      # 置于反代后时在本机 .env 设 TRUST_PROXY=1，使限流使用真实客户端 IP
+      TRUST_PROXY: ${TRUST_PROXY:-}
+      # 多副本限流共享；Compose 默认走内置 Redis，本地显式设空可回退为进程内限流
+      THROTTLER_REDIS_URL: ${THROTTLER_REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${API_PORT:-3300}:3000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:3000/v1/health | grep -q ok",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+volumes:
+  aihr_app_pgdata:
+    name: aihr-app-pgdata
+  aihr_app_redisdata:
+    name: aihr-app-redisdata

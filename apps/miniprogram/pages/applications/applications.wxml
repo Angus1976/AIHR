@@ -1,0 +1,32 @@
+<view class="page">
+  <view wx:if="{{!hasToken}}" class="card">
+    <view class="section-title">需要登录</view>
+    <view class="muted">请在首页完成微信登录后查看投递记录。</view>
+    <button class="btn-primary" bindtap="goHome">去首页登录</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{error}}" class="card warn">{{error}}</view>
+    <view wx:if="{{loading}}" class="muted loading">加载中…</view>
+
+    <block wx:for="{{list}}" wx:key="id">
+      <view
+        class="card app-row"
+        data-id="{{item.jobPostingId}}"
+        bindtap="openJob"
+      >
+        <view class="job-title">{{item.jobTitle || '岗位已删除'}}</view>
+        <view class="muted">{{item.enterpriseName || '未知企业'}}</view>
+        <view class="meta">
+          <text class="tag">{{item.status}}</text>
+          <text class="muted">{{item.createdAtText}}</text>
+        </view>
+        <view wx:if="{{item.pitch}}" class="pitch">{{item.pitch}}</view>
+      </view>
+    </block>
+
+    <view wx:if="{{!loading && !list.length && !error}}" class="card muted">
+      暂无投递记录，先去岗位列表看看吧。
+    </view>
+  </block>
+</view>
