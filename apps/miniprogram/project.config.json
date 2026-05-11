@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./",
   "projectname": "aihr-miniprogram",
-  "description": "职AI通 · 原生微信小程序",
+  "description": "职得 Jobde · 原生微信小程序",
   "appid": "wx0000000000000000",
   "setting": {
     "urlCheck": true,

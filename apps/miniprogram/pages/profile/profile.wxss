@@ -11,7 +11,7 @@
 .input {
   width: 100%;
   padding: 20rpx 24rpx;
-  border: 1px solid var(--line);
+  border: 1rpx solid var(--line);
   border-radius: 16rpx;
   box-sizing: border-box;
   font-size: 28rpx;
@@ -21,7 +21,7 @@
   width: 100%;
   min-height: 200rpx;
   padding: 20rpx 24rpx;
-  border: 1px solid var(--line);
+  border: 1rpx solid var(--line);
   border-radius: 16rpx;
   box-sizing: border-box;
   font-size: 26rpx;

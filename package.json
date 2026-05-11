@@ -1,7 +1,7 @@
 {
   "name": "aihr",
   "private": true,
-  "description": "职AI通 — AI 赋能就业服务平台（小程序 + Web + API）",
+  "description": "职得 Jobde — AI 赋能就业服务平台（小程序 + Web + API）",
   "scripts": {
     "dev:api": "npm run start:dev --prefix apps/api",
     "dev:admin": "npm run dev --prefix apps/admin-web",

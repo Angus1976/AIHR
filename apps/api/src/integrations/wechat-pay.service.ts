@@ -95,7 +95,7 @@ export class WechatPayService {
           Authorization: authorization,
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'User-Agent': 'AIHR/1.0 (NestJS)',
+          'User-Agent': 'Jobde/1.0 (NestJS)',
         },
         timeout: 15_000,
       });

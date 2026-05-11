@@ -1,7 +1,7 @@
 const { request } = require('../../utils/request.js');
 
 const CONSENT_TEXT =
-  '我已阅读并同意职AI通服务说明、个人信息处理规则与支付相关条款，知晓当前为服务付费节点。';
+  '我已阅读并同意职得（Jobde）服务说明、个人信息处理规则与支付相关条款，知晓当前为服务付费节点。';
 
 function fenToYuan(fen) {
   return (Number(fen || 0) / 100).toFixed(2);
@@ -51,6 +51,18 @@ function transportText(value) {
   }[value] || value || '在线面试';
 }
 
+function stepDeliveredOrConfirmed(st) {
+  return st && (st.status === 'DELIVERED' || st.status === 'CONFIRMED');
+}
+
+function computeFlowRoleTypes(plan, loading, steps) {
+  const roles = [{ type: 'hero', stepIndex: -1 }];
+  if (!plan && !loading) roles.push({ type: 'ensure', stepIndex: -1 });
+  (steps || []).forEach((_, i) => roles.push({ type: 'step', stepIndex: i }));
+  roles.push({ type: 'tail', stepIndex: -1 });
+  return roles;
+}
+
 Page({
   data: {
     list: [],
@@ -69,6 +81,117 @@ Page({
     ensureTargetRole: '',
     ensureSummary: '我确认进入 6 步就业服务路径，将按环节配合平台完成交付。',
     mockSessions: [],
+    flowStepCount: 0,
+    flowActiveIndex: 0,
+    flowDots: [],
+    flowNextLabel: '',
+  },
+  computeFlowRoles() {
+    return computeFlowRoleTypes(this.data.plan, this.data.loading, this.data.steps);
+  },
+  buildScrollOnlyDots(best, count) {
+    return Array.from({ length: count }, (_, i) => ({
+      base: i < best ? 'done' : 'todo',
+      active: i === best,
+    }));
+  },
+  buildServiceFlowDots(best, count, roles) {
+    const steps = this.data.steps || [];
+    if (!roles || roles.length !== count) {
+      return this.buildScrollOnlyDots(best, count);
+    }
+    return roles.map((role, i) => {
+      let base = 'todo';
+      if (role.type === 'step' && role.stepIndex >= 0) {
+        const s = steps[role.stepIndex];
+        if (stepDeliveredOrConfirmed(s)) base = 'done-lock';
+      } else if (role.type === 'ensure' && this.data.plan) {
+        base = 'done-lock';
+      }
+      if (base === 'todo' && i < best) base = 'done';
+      return { base, active: i === best };
+    });
+  },
+  serviceFlowNextLabel() {
+    const steps = this.data.steps || [];
+    if (!this.data.plan) {
+      return this.data.loading ? '加载完成后可生成服务计划' : '建议下一步：生成个人 6 步服务计划';
+    }
+    const firstTodo = steps.findIndex((s) => !stepDeliveredOrConfirmed(s));
+    if (firstTodo >= 0) {
+      const s = steps[firstTodo];
+      return `建议下一步：第 ${String(firstTodo + 1).padStart(2, '0')} 步 · ${s.title}（${s.statusText}）`;
+    }
+    return '环节已交付或已确认，可继续查看付款节点、服务产品与条款';
+  },
+  scheduleFlowRefresh(immediate) {
+    if (!this.data.hasToken) return;
+    if (this._flowTimer) {
+      clearTimeout(this._flowTimer);
+      this._flowTimer = null;
+    }
+    if (immediate) {
+      this.refreshFlowActive();
+      return;
+    }
+    this._flowTimer = setTimeout(() => {
+      this._flowTimer = null;
+      this.refreshFlowActive();
+    }, 120);
+  },
+  _sameFlowDots(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i += 1) {
+      if (a[i].base !== b[i].base || a[i].active !== b[i].active) return false;
+    }
+    return true;
+  },
+  refreshFlowActive() {
+    if (!this.data.hasToken) return;
+    wx.createSelectorQuery()
+      .in(this)
+      .selectAll('.flow-anchor')
+      .boundingClientRect((rects) => {
+        if (!rects || !rects.length) return;
+        const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+        const h = info.windowHeight || info.screenHeight;
+        const center = h / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        rects.forEach((r, i) => {
+          const mid = r.top + r.height / 2;
+          const d = Math.abs(mid - center);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        const roles = this.computeFlowRoles();
+        const flowDots = this.buildServiceFlowDots(best, rects.length, roles);
+        const flowNextLabel = this.serviceFlowNextLabel();
+        const { flowActiveIndex, flowStepCount, flowDots: prevDots, flowNextLabel: prevLabel } = this.data;
+        if (
+          flowActiveIndex === best
+          && flowStepCount === rects.length
+          && flowNextLabel === prevLabel
+          && this._sameFlowDots(prevDots, flowDots)
+        ) {
+          return;
+        }
+        this.setData({
+          flowActiveIndex: best,
+          flowStepCount: rects.length,
+          flowDots,
+          flowNextLabel,
+        });
+      })
+      .exec();
+  },
+  onReady() {
+    this.scheduleFlowRefresh(true);
+  },
+  onPageScroll() {
+    this.scheduleFlowRefresh(false);
   },
   goProfile() {
     wx.navigateTo({ url: '/pages/profile/profile' });
@@ -100,7 +223,7 @@ Page({
     if (hasToken) {
       void this.load();
     } else {
-      this.setData({ list: [], error: '' });
+      this.setData({ list: [], error: '', flowDots: [], flowStepCount: 0, flowNextLabel: '' });
     }
   },
   async onPullDownRefresh() {
@@ -204,6 +327,7 @@ Page({
       });
     } finally {
       this.setData({ loading: false });
+      this.scheduleFlowRefresh(true);
     }
   },
   onAgree(e) {
@@ -276,7 +400,7 @@ Page({
     }
   },
   goHome() {
-    wx.reLaunch({ url: '/pages/index/index' });
+    wx.switchTab({ url: '/pages/index/index' });
   },
   async pay(e) {
     const product = this.data.list.find((p) => p.id === e.currentTarget.dataset.id);

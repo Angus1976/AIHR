@@ -87,8 +87,8 @@ export class PaymentsService {
       milestone?.title ||
       product?.name ||
       (kind === OrderKind.SEEKER_SERVICE_FEE
-        ? '职AI通 · 求职服务费'
-        : '职AI通 · 订单');
+        ? '职得 Jobde · 求职服务费'
+        : '职得 Jobde · 订单');
     const outTradeNo = this.newOutTradeNo();
     const order = await this.prisma.order.create({
       data: {

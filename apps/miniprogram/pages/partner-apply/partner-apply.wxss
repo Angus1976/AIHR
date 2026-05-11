@@ -9,7 +9,7 @@
   width: 100%;
   margin-bottom: 16rpx;
   padding: 18rpx 22rpx;
-  border: 1px solid var(--line);
+  border: 1rpx solid var(--line);
   border-radius: 16rpx;
   box-sizing: border-box;
   font-size: 26rpx;
@@ -31,7 +31,7 @@
 
 .row {
   padding: 18rpx 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1rpx solid var(--line);
 }
 
 .name {

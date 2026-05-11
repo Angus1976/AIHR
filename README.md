@@ -1,12 +1,11 @@
-<<<<<<< HEAD
-# 职AI通（AIHR）— AI 赋能就业服务平台
+# 职得（Jobde）— AI 赋能就业服务平台
 
-本仓库承载 **职AI通** 产品工程：**原生微信小程序**（主入口）、**Vue 3 + Vite 管理端**（运营 / 就业老师 / 管理员）、**NestJS + Prisma API**（腾讯系能力绑定位 + 多 LLM 路由占位）。PRD 见 `docs/PRD-SUMMARY.md` 与 `PRD/`。
+本仓库承载 **职得（Jobde）** 产品工程：**原生微信小程序**（主入口）、**Vue 3 + Vite 管理端**（运营 / 就业老师 / 管理员）、**NestJS + Prisma API**（腾讯系能力绑定位 + 多 LLM 路由占位）。PRD 见 `docs/PRD-SUMMARY.md` 与 `PRD/`。
 
 ## 仓库结构
 
 ```
-AIHR/
+./
 ├── apps/
 │   ├── miniprogram/      # 原生微信小程序
 │   ├── miniprogram-sim/  # 本地 H5 小程序模拟器（角色切换 + 手机框）
@@ -250,6 +249,3 @@ npm run prisma:demo
 ## 许可证
 
 待定（由项目方指定）。
-=======
-# AIHR
->>>>>>> 2276722adc1bd1e7bfb95f83d795c24f8af31707

@@ -9,14 +9,14 @@ async function main() {
     where: { slug: 'default' },
     create: {
       slug: 'default',
-      name: '职AI通',
+      name: '职得',
       primaryColor: '#243F34',
       accentColor: '#B87932',
       welcomeText: '从岗位匹配、协议签署到服务付费的一站式就业服务工作流',
       wxMiniAppId: process.env.WECHAT_MINI_APP_ID ?? null,
     },
     update: {
-      name: '职AI通',
+      name: '职得',
       primaryColor: '#243F34',
       accentColor: '#B87932',
       welcomeText: '从岗位匹配、协议签署到服务付费的一站式就业服务工作流',
@@ -66,11 +66,11 @@ async function main() {
       tenantId: tenant.id,
       key: 'default_system',
       title: '系统提示',
-      body: '你以「职AI通」就业服务口吻提供建议。回答须专业、合规、简洁，不编造候选人隐私；面向求职者时不说明建议来自 AI、模型、机器人、真人专家或老师，统一使用“平台”“服务团队”“服务建议”等中性表达。',
+      body: '你以「职得（Jobde）」就业服务口吻提供建议。回答须专业、合规、简洁，不编造候选人隐私；面向求职者时不说明建议来自 AI、模型、机器人、真人专家或老师，统一使用“平台”“服务团队”“服务建议”等中性表达。',
     },
     update: {
       title: '系统提示',
-      body: '你以「职AI通」就业服务口吻提供建议。回答须专业、合规、简洁，不编造候选人隐私；面向求职者时不说明建议来自 AI、模型、机器人、真人专家或老师，统一使用“平台”“服务团队”“服务建议”等中性表达。',
+      body: '你以「职得（Jobde）」就业服务口吻提供建议。回答须专业、合规、简洁，不编造候选人隐私；面向求职者时不说明建议来自 AI、模型、机器人、真人专家或老师，统一使用“平台”“服务团队”“服务建议”等中性表达。',
     },
   });
 
@@ -138,12 +138,12 @@ async function main() {
     {
       key: 'service_step_POST_OFFER_COACHING',
       title: '服务环节：职后辅导',
-      body: '请以职AI通就业服务口吻，围绕新员工角色适应、岗位职责理解、同事沟通、绩效达成和心态管理，给出试用期 2 周行动建议和遇到问题时的处理方式。面向求职者时，不说明建议来自 AI、模型、机器人、真人专家或老师。',
+      body: '请以职得（Jobde）就业服务口吻，围绕新员工角色适应、岗位职责理解、同事沟通、绩效达成和心态管理，给出试用期 2 周行动建议和遇到问题时的处理方式。面向求职者时，不说明建议来自 AI、模型、机器人、真人专家或老师。',
     },
     {
       key: 'service_step_POST_CONVERSION_PLANNING',
       title: '服务环节：职后规划',
-      body: '请以职AI通就业服务口吻，基于候选人的岗位方向，给出转正后的成长计划：技能提升、证书/课程、社交沟通、晋升机会和下一阶段岗位机会关注点。面向求职者时，不说明建议来自 AI、模型、机器人、真人专家或老师。',
+      body: '请以职得（Jobde）就业服务口吻，基于候选人的岗位方向，给出转正后的成长计划：技能提升、证书/课程、社交沟通、晋升机会和下一阶段岗位机会关注点。面向求职者时，不说明建议来自 AI、模型、机器人、真人专家或老师。',
     },
   ];
   for (const p of serviceStepPrompts) {
@@ -235,7 +235,7 @@ async function main() {
   });
 
   const defaultConsentContent =
-    '我已阅读并同意职AI通服务说明、个人信息处理规则与支付相关条款，知晓当前为服务付费节点。';
+    '我已阅读并同意职得（Jobde）服务说明、个人信息处理规则与支付相关条款，知晓当前为服务付费节点。';
   await prisma.complianceTemplate.upsert({
     where: {
       tenantId_purpose_version: {

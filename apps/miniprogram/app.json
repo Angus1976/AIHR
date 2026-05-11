@@ -1,11 +1,12 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/services/services",
+    "pages/mine/mine",
     "pages/jobs/jobs",
     "pages/job-detail/job-detail",
     "pages/profile/profile",
     "pages/applications/applications",
-    "pages/services/services",
     "pages/interview-ops/interview-ops",
     "pages/partner-apply/partner-apply",
     "pages/notifications/notifications",
@@ -13,10 +14,36 @@
     "pages/billing/billing"
   ],
   "window": {
-    "navigationBarTitleText": "职AI通",
-    "navigationBarBackgroundColor": "#243F34",
+    "navigationBarTitleText": "职得",
+    "navigationBarBackgroundColor": "#1e3a5f",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#F4EFE3"
+  },
+  "tabBar": {
+    "color": "#5c6678",
+    "selectedColor": "#00a89a",
+    "backgroundColor": "#fffdf8",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/services/services",
+        "text": "服务",
+        "iconPath": "images/tab/service.png",
+        "selectedIconPath": "images/tab/service-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tab/mine.png",
+        "selectedIconPath": "images/tab/mine-active.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

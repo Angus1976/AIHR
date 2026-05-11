@@ -1,4 +1,4 @@
 .section-title, .title { font-size: 30rpx; font-weight: 700; color: var(--primary); margin-bottom: 12rpx; }
 .warn { color: var(--warning); font-size: 26rpx; }
-.row { padding: 18rpx 0; border-bottom: 1px solid var(--line); }
+.row { padding: 18rpx 0; border-bottom: 1rpx solid var(--line); }
 .mini-btn { margin: 14rpx 0 0; padding: 8rpx 18rpx; border-radius: 999rpx; background: var(--primary); color: var(--button-text); font-size: 22rpx; line-height: 1.5; }

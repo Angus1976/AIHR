@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 type Role = 'JOB_SEEKER' | 'PARTNER' | 'ENTERPRISE_USER';
 
@@ -72,7 +72,48 @@ const token = ref(localStorage.getItem('aihr_sim_token') || '');
 const user = ref<UserInfo | null>(null);
 const err = ref('');
 const loading = ref(false);
-const tab = ref('home');
+const tab = ref<'home' | 'service' | 'mine'>('home');
+type MineInner = 'profile' | 'interview' | 'billing' | 'notifications' | 'partner';
+const mineInnerTab = ref<MineInner>('profile');
+
+const homeScrollRef = ref<HTMLElement | null>(null);
+const serviceScrollRef = ref<HTMLElement | null>(null);
+const homeActiveStep = ref(0);
+const serviceActiveStepIndex = ref(0);
+let homeScrollRaf = 0;
+let serviceScrollRaf = 0;
+
+/** 侧栏进度条：默认展开，在侧栏上左滑收起 */
+const homeRailOpen = ref(true);
+const serviceRailOpen = ref(true);
+let railSwipeStartX = 0;
+let railSwipeStartY = 0;
+
+function onRailSwipeStart(e: TouchEvent) {
+  const t = e.touches[0];
+  if (!t) return;
+  railSwipeStartX = t.clientX;
+  railSwipeStartY = t.clientY;
+}
+
+function onRailSwipeEnd(e: TouchEvent, target: 'home' | 'service') {
+  const t = e.changedTouches[0];
+  if (!t) return;
+  const dx = t.clientX - railSwipeStartX;
+  const dy = t.clientY - railSwipeStartY;
+  if (dx < -44 && Math.abs(dx) > Math.abs(dy) * 1.15) {
+    if (target === 'home') homeRailOpen.value = false;
+    else serviceRailOpen.value = false;
+  }
+}
+
+function onHomeRailSwipeEnd(e: TouchEvent) {
+  onRailSwipeEnd(e, 'home');
+}
+
+function onServiceRailSwipeEnd(e: TouchEvent) {
+  onRailSwipeEnd(e, 'service');
+}
 
 const jobs = ref<Job[]>([]);
 const products = ref<Product[]>([]);
@@ -104,6 +145,111 @@ const unread = computed(() => notices.value.filter((n) => !n.readAt).length);
 const completedSteps = computed(() =>
   servicePlan.value?.steps.filter((s) => s.status === 'DELIVERED' || s.status === 'CONFIRMED').length ?? 0,
 );
+
+const mineNavItems = computed(() => {
+  if (role.value === 'JOB_SEEKER') {
+    return [
+      { key: 'profile' as const, label: '档案' },
+      { key: 'interview' as const, label: '面试' },
+      { key: 'billing' as const, label: '订单' },
+      { key: 'notifications' as const, label: '通知' },
+    ];
+  }
+  if (role.value === 'PARTNER') {
+    return [
+      { key: 'partner' as const, label: '入驻' },
+      { key: 'notifications' as const, label: '通知' },
+    ];
+  }
+  return [{ key: 'notifications' as const, label: '通知' }];
+});
+
+const homeStepTotal = computed(() => 1 + jobs.value.length + products.value.length);
+
+const serviceRailSteps = computed(() => servicePlan.value?.steps ?? []);
+
+function stepIsDone(status: string) {
+  return status === 'DELIVERED' || status === 'CONFIRMED';
+}
+
+function pickActiveScrollIndex(container: HTMLElement, selector: string) {
+  const els = Array.from(container.querySelectorAll<HTMLElement>(selector));
+  if (!els.length) return 0;
+  const rootRect = container.getBoundingClientRect();
+  const centerY = rootRect.top + rootRect.height / 2;
+  let best = 0;
+  let bestDist = Infinity;
+  els.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    const mid = r.top + r.height / 2;
+    const d = Math.abs(mid - centerY);
+    if (d < bestDist) {
+      bestDist = d;
+      best = i;
+    }
+  });
+  return best;
+}
+
+function onHomeScroll() {
+  if (homeScrollRaf) cancelAnimationFrame(homeScrollRaf);
+  homeScrollRaf = requestAnimationFrame(() => {
+    homeScrollRaf = 0;
+    const el = homeScrollRef.value;
+    if (!el) return;
+    const total = homeStepTotal.value;
+    if (total <= 0) {
+      homeActiveStep.value = 0;
+      return;
+    }
+    homeActiveStep.value = Math.min(pickActiveScrollIndex(el, '[data-home-step]'), total - 1);
+  });
+}
+
+function onServiceScroll() {
+  if (serviceScrollRaf) cancelAnimationFrame(serviceScrollRaf);
+  serviceScrollRaf = requestAnimationFrame(() => {
+    serviceScrollRaf = 0;
+    const el = serviceScrollRef.value;
+    if (!el) return;
+    const steps = el.querySelectorAll('[data-service-step]');
+    if (!steps.length) {
+      serviceActiveStepIndex.value = 0;
+      return;
+    }
+    serviceActiveStepIndex.value = pickActiveScrollIndex(el, '[data-service-step]');
+  });
+}
+
+function syncMineInnerToRole() {
+  const items = mineNavItems.value.map((i) => i.key);
+  if (!items.includes(mineInnerTab.value)) {
+    mineInnerTab.value = items[0]!;
+  }
+}
+
+watch(role, () => {
+  syncMineInnerToRole();
+  if (tab.value === 'service' && role.value !== 'JOB_SEEKER') {
+    tab.value = 'home';
+  }
+});
+
+watch(tab, async (t) => {
+  await nextTick();
+  if (t === 'home') onHomeScroll();
+  if (t === 'service') onServiceScroll();
+});
+
+watch(homeStepTotal, async () => {
+  await nextTick();
+  if (tab.value === 'home') onHomeScroll();
+});
+
+watch(serviceRailSteps, async () => {
+  await nextTick();
+  if (tab.value === 'service') onServiceScroll();
+});
 
 const API_TIMEOUT_MS = 45_000;
 
@@ -295,10 +441,12 @@ async function bookMockInterview() {
 }
 
 function goSeekerProfileTab() {
-  tab.value = 'profile';
+  tab.value = 'mine';
+  mineInnerTab.value = 'profile';
 }
 function goSeekerInterviewTab() {
-  tab.value = 'interview';
+  tab.value = 'mine';
+  mineInnerTab.value = 'interview';
 }
 
 async function requestStep(step: ServiceStep) {
@@ -401,6 +549,7 @@ async function submitPartner() {
 }
 
 onMounted(() => {
+  syncMineInnerToRole();
   if (token.value) loadAll();
 });
 </script>
@@ -410,7 +559,7 @@ onMounted(() => {
     <section class="control">
       <div>
         <div class="eyebrow">Local WeChat Mini Program Simulator</div>
-        <h1>职AI通小程序本地模拟器</h1>
+        <h1>职得（Jobde）小程序本地模拟器</h1>
         <p>不依赖真实微信开发者工具，直接用本地 API 模拟不同角色的移动端路径。</p>
       </div>
       <div class="role-card">
@@ -428,7 +577,9 @@ onMounted(() => {
       <div class="phone">
         <div class="status">9:41 <span>{{ user?.displayName || '未登录' }}</span></div>
         <header>
-          <strong>职AI通</strong>
+          <div class="header-brand">
+            <img src="/brand-logo.png" alt="" class="header-logo" width="120" height="40" />
+          </div>
           <em v-if="unread">{{ unread }}</em>
         </header>
         <div v-if="err" class="error">{{ err }}</div>
@@ -440,45 +591,126 @@ onMounted(() => {
           <nav>
             <button :class="{ active: tab === 'home' }" @click="tab = 'home'">首页</button>
             <button v-if="role === 'JOB_SEEKER'" :class="{ active: tab === 'service' }" @click="tab = 'service'">服务</button>
-            <button v-if="role === 'JOB_SEEKER'" :class="{ active: tab === 'profile' }" @click="tab = 'profile'">档案</button>
-            <button v-if="role === 'JOB_SEEKER'" :class="{ active: tab === 'interview' }" @click="tab = 'interview'">面试</button>
-            <button v-if="role === 'JOB_SEEKER'" :class="{ active: tab === 'billing' }" @click="tab = 'billing'">订单</button>
-            <button v-if="role === 'PARTNER'" :class="{ active: tab === 'partner' }" @click="tab = 'partner'">入驻</button>
-            <button :class="{ active: tab === 'notice' }" @click="tab = 'notice'">通知</button>
+            <button :class="{ active: tab === 'mine' }" @click="tab = 'mine'">我的</button>
           </nav>
 
-          <section v-if="tab === 'home'" class="content">
-            <div class="hero">
-              <span>Talent Service OS</span>
-              <h2>从岗位匹配到服务履约</h2>
-              <p>本地模拟环境已连接 API，可完整试用移动端路径。</p>
+          <section v-if="tab === 'home'" class="content content-with-rail" :class="{ 'rail-collapsed': !homeRailOpen }">
+            <aside
+              v-if="homeRailOpen"
+              class="scroll-rail scroll-rail--narrow"
+              aria-hidden="true"
+              @touchstart.passive="onRailSwipeStart"
+              @touchend.passive="onHomeRailSwipeEnd"
+            >
+              <div class="rail-track rail-track--narrow">
+                <template v-for="(_, i) in homeStepTotal" :key="i">
+                  <div
+                    class="rail-dot rail-dot--narrow"
+                    :class="{
+                      done: i < homeActiveStep,
+                      active: i === homeActiveStep,
+                      todo: i > homeActiveStep,
+                    }"
+                  />
+                </template>
+              </div>
+              <p class="rail-caption rail-caption--tight">{{ homeActiveStep + 1 }}/{{ homeStepTotal }}</p>
+              <p class="rail-hint rail-hint--tight">左滑收起 · 高亮为当前</p>
+            </aside>
+            <button
+              v-else
+              type="button"
+              class="rail-peek"
+              aria-label="展开进度"
+              @click="homeRailOpen = true"
+            >
+              ›
+            </button>
+            <div ref="homeScrollRef" class="content-scroll" @scroll.passive="onHomeScroll">
+              <div class="hero" data-home-step>
+                <span>Jobde</span>
+                <h2>从岗位匹配到服务履约</h2>
+                <p>本地模拟环境已连接 API，可完整试用移动端路径。</p>
+              </div>
+              <article v-for="job in jobs" :key="job.id" class="card" data-home-step>
+                <strong>{{ job.title }}</strong>
+                <p>{{ job.enterprise?.name }} · 投递 {{ job._count?.applications ?? 0 }}</p>
+                <button v-if="role === 'JOB_SEEKER'" @click="apply(job)">投递该岗位</button>
+              </article>
+              <article v-for="p in products" :key="p.id" class="card product" data-home-step>
+                <strong>{{ p.name }}</strong>
+                <p>{{ p.description || '服务产品' }}</p>
+                <button v-if="role === 'JOB_SEEKER'" @click="pay(p)">同意并预下单 ¥{{ (p.amountFen / 100).toFixed(2) }}</button>
+              </article>
             </div>
-            <article v-for="job in jobs" :key="job.id" class="card">
-              <strong>{{ job.title }}</strong>
-              <p>{{ job.enterprise?.name }} · 投递 {{ job._count?.applications ?? 0 }}</p>
-              <button v-if="role === 'JOB_SEEKER'" @click="apply(job)">投递该岗位</button>
-            </article>
-            <article v-for="p in products" :key="p.id" class="card product">
-              <strong>{{ p.name }}</strong>
-              <p>{{ p.description || '服务产品' }}</p>
-              <button v-if="role === 'JOB_SEEKER'" @click="pay(p)">同意并预下单 ¥{{ (p.amountFen / 100).toFixed(2) }}</button>
-            </article>
           </section>
 
-          <section v-if="tab === 'service'" class="content">
-            <div class="hero">
-              <span>6-Step Service Plan</span>
-              <h2>6 步就业服务路径</h2>
-              <p>{{ neutralText(servicePlan?.summary || '暂无专属服务计划时，可先在下方生成，或由平台服务团队创建。') }}</p>
-              <p v-if="servicePlan">{{ completedSteps }}/6 已交付或确认 · 目标 {{ servicePlan.targetRole || '待确认' }}</p>
+          <section v-if="tab === 'service'" class="content content-with-rail" :class="{ 'rail-collapsed': !serviceRailOpen }">
+            <aside
+              v-if="serviceRailOpen && serviceRailSteps.length"
+              class="scroll-rail scroll-rail--narrow service-rail"
+              aria-hidden="true"
+              @touchstart.passive="onRailSwipeStart"
+              @touchend.passive="onServiceRailSwipeEnd"
+            >
+              <div class="rail-track rail-track--service rail-track--narrow">
+                <div
+                  v-for="(s, i) in serviceRailSteps"
+                  :key="s.id"
+                  class="rail-dot rail-dot--narrow"
+                  :class="{
+                    done: stepIsDone(s.status),
+                    todo: !stepIsDone(s.status),
+                    active: i === serviceActiveStepIndex,
+                  }"
+                />
+              </div>
+              <p class="rail-caption rail-caption--tight">
+                {{ serviceActiveStepIndex + 1 }}/{{ serviceRailSteps.length }}
+                <template v-if="serviceRailSteps[serviceActiveStepIndex]">
+                  {{ stepIsDone(serviceRailSteps[serviceActiveStepIndex]!.status) ? ' 已完' : ' 待办' }}
+                </template>
+              </p>
+              <p class="rail-hint rail-hint--tight">左滑收起 · 青点已交付</p>
+            </aside>
+            <div
+              v-else-if="serviceRailOpen && !serviceRailSteps.length"
+              class="scroll-rail scroll-rail--placeholder scroll-rail--narrow"
+              aria-hidden="true"
+              @touchstart.passive="onRailSwipeStart"
+              @touchend.passive="onServiceRailSwipeEnd"
+            >
+              <p class="rail-caption rail-caption--tight">无计划</p>
+              <p class="rail-hint rail-hint--tight">左滑收起</p>
             </div>
-            <article v-if="!servicePlan" class="card ensure">
-              <strong>首次使用：生成服务计划</strong>
-              <label>目标岗位<input v-model="ensureForm.targetRole" /></label>
-              <label>备注<textarea v-model="ensureForm.summary" rows="2" /></label>
-              <button class="wide" @click="ensureMyPlan">生成我的 6 步服务计划</button>
-            </article>
-            <article v-for="(step, idx) in servicePlan?.steps || []" :key="step.id" class="card service-step">
+            <button
+              v-else
+              type="button"
+              class="rail-peek"
+              aria-label="展开进度"
+              @click="serviceRailOpen = true"
+            >
+              ›
+            </button>
+            <div ref="serviceScrollRef" class="content-scroll" @scroll.passive="onServiceScroll">
+              <div class="hero" data-service-ancillary>
+                <span>Jobde · 6-Step</span>
+                <h2>6 步就业服务路径</h2>
+                <p>{{ neutralText(servicePlan?.summary || '暂无专属服务计划时，可先在下方生成，或由平台服务团队创建。') }}</p>
+                <p v-if="servicePlan">{{ completedSteps }}/6 已交付或确认 · 目标 {{ servicePlan.targetRole || '待确认' }}</p>
+              </div>
+              <article v-if="!servicePlan" class="card ensure" data-service-ancillary>
+                <strong>首次使用：生成服务计划</strong>
+                <label>目标岗位<input v-model="ensureForm.targetRole" /></label>
+                <label>备注<textarea v-model="ensureForm.summary" rows="2" /></label>
+                <button class="wide" @click="ensureMyPlan">生成我的 6 步服务计划</button>
+              </article>
+              <article
+                v-for="(step, idx) in servicePlan?.steps || []"
+                :key="step.id"
+                class="card service-step"
+                data-service-step
+              >
               <small>{{ String(idx + 1).padStart(2, '0') }} · {{ providerLabel(step.providerType) }}</small>
               <strong>{{ step.title }}</strong>
               <p>{{ neutralText(step.valueProposition) }}</p>
@@ -513,7 +745,7 @@ onMounted(() => {
               </div>
               <div v-if="step.key === 'INTERVIEW_CONFIRMATION'" class="flow-panel">
                 <p><strong>求职流程 · 企业面试机会</strong> — 在「面试」页确认参加或拒绝平台推送的机会。</p>
-                <button type="button" @click="goSeekerInterviewTab">打开面试机会</button>
+                <button type="button" @click="goSeekerInterviewTab">前往「我的 · 面试」</button>
               </div>
               <label v-if="step.status !== 'LOCKED'" class="complement"
                 >本环节补充（可选）
@@ -534,81 +766,97 @@ onMounted(() => {
               <button v-if="step.status !== 'LOCKED'" @click="requestStep(step)">获取该环节服务建议</button>
               <button v-if="step.status === 'DELIVERED'" class="secondary" @click="confirmStep(step)">确认该环节成果</button>
             </article>
-            <article v-for="m in servicePlan?.milestones || []" :key="m.id" class="card milestone">
-              <strong>{{ m.title }}</strong>
-              <p>{{ m.triggerText }}</p>
-              <p>{{ m.amountFen ? '¥' + (m.amountFen / 100).toFixed(2) : '无需付款' }} · {{ m.status }}</p>
-              <button v-if="m.status === 'PAYABLE' && m.amountFen > 0" @click="payMilestone(m)">支付该节点</button>
-            </article>
-          </section>
-
-          <section v-if="tab === 'profile'" class="content">
-            <label>一句话亮点<input v-model="profile.headline" /></label>
-            <label>技能关键词<textarea v-model="profile.skillsText" rows="4" /></label>
-            <label>简历摘要<textarea v-model="profile.resumeMarkdown" rows="5" /></label>
-            <button class="wide" @click="saveProfile">保存档案</button>
-            <article v-for="a in applications" :key="a.id" class="card">
-              <strong>{{ a.jobPosting?.title }}</strong>
-              <p>{{ a.jobPosting?.enterprise?.name }} · {{ a.status }}</p>
-            </article>
-            <article v-for="c in contracts" :key="c.id" class="card">
-              <strong>{{ c.title }}</strong>
-              <p>{{ c.status }} · {{ c.signatureRef || '未签署' }}</p>
-              <button v-if="c.status !== 'SIGNED'" @click="sign(c)">签署占位</button>
-            </article>
-          </section>
-
-          <section v-if="tab === 'interview'" class="content">
-            <div class="hero">
-              <span>Interview Confirmation</span>
-              <h2>面试机会确认</h2>
-              <p>平台推送企业岗位面试机会后，你可以明确选择参加或拒绝。</p>
-            </div>
-            <article v-for="item in interviewOpportunities" :key="item.id" class="card">
-              <strong>{{ item.jobPosting.title }}</strong>
-              <p>{{ item.jobPosting.enterprise.name }} · {{ item.status }}</p>
-              <p v-if="item.scheduledAt">建议时间：{{ item.scheduledAt }}</p>
-              <p v-if="item.note">{{ item.note }}</p>
-              <button v-if="item.status === 'PENDING'" @click="respondInterview(item, 'ACCEPTED')">确认参加</button>
-              <button v-if="item.status === 'PENDING'" class="secondary" @click="respondInterview(item, 'DECLINED')">拒绝参加</button>
-            </article>
-            <div v-if="!interviewOpportunities.length" class="empty">
-              <strong>暂无面试机会</strong>
-              <p>等待平台推送岗位面试机会。</p>
+              <article v-for="m in servicePlan?.milestones || []" :key="m.id" class="card milestone" data-service-ancillary>
+                <strong>{{ m.title }}</strong>
+                <p>{{ m.triggerText }}</p>
+                <p>{{ m.amountFen ? '¥' + (m.amountFen / 100).toFixed(2) : '无需付款' }} · {{ m.status }}</p>
+                <button v-if="m.status === 'PAYABLE' && m.amountFen > 0" @click="payMilestone(m)">支付该节点</button>
+              </article>
             </div>
           </section>
 
-          <section v-if="tab === 'billing'" class="content">
-            <article v-for="o in orders" :key="o.id" class="card">
-              <strong>{{ o.description || '订单' }}</strong>
-              <p>{{ o.status }} · ¥{{ (o.amountFen / 100).toFixed(2) }}</p>
-              <button @click="refund(o)">申请部分退款</button>
-            </article>
-            <article v-for="r in refunds" :key="r.id" class="card">
-              <strong>退款申请</strong>
-              <p>{{ r.status }} · {{ r.amountFen }} 分</p>
-            </article>
-          </section>
+          <section v-if="tab === 'mine'" class="content">
+            <div class="mine-subnav" role="tablist">
+              <button
+                v-for="item in mineNavItems"
+                :key="item.key"
+                type="button"
+                role="tab"
+                :class="{ active: mineInnerTab === item.key }"
+                @click="mineInnerTab = item.key"
+              >
+                {{ item.label }}
+              </button>
+            </div>
 
-          <section v-if="tab === 'partner'" class="content">
-            <label>机构名称<input v-model="partnerForm.orgName" /></label>
-            <label>联系人<input v-model="partnerForm.contactName" /></label>
-            <label>类型<input v-model="partnerForm.category" /></label>
-            <label>资质<textarea v-model="partnerForm.qualification" rows="4" /></label>
-            <button class="wide" @click="submitPartner">提交入驻申请</button>
-            <article v-for="p in partnerApps" :key="p.id" class="card">
-              <strong>{{ p.orgName }}</strong>
-              <p>{{ p.category }} · {{ p.status }}</p>
-              <p>{{ p.reviewNote || '等待审核' }}</p>
-            </article>
-          </section>
+            <template v-if="mineInnerTab === 'profile' && role === 'JOB_SEEKER'">
+              <label>一句话亮点<input v-model="profile.headline" /></label>
+              <label>技能关键词<textarea v-model="profile.skillsText" rows="4" /></label>
+              <label>简历摘要<textarea v-model="profile.resumeMarkdown" rows="5" /></label>
+              <button class="wide" @click="saveProfile">保存档案</button>
+              <article v-for="a in applications" :key="a.id" class="card">
+                <strong>{{ a.jobPosting?.title }}</strong>
+                <p>{{ a.jobPosting?.enterprise?.name }} · {{ a.status }}</p>
+              </article>
+              <article v-for="c in contracts" :key="c.id" class="card">
+                <strong>{{ c.title }}</strong>
+                <p>{{ c.status }} · {{ c.signatureRef || '未签署' }}</p>
+                <button v-if="c.status !== 'SIGNED'" @click="sign(c)">签署占位</button>
+              </article>
+            </template>
 
-          <section v-if="tab === 'notice'" class="content">
-            <article v-for="n in notices" :key="n.id" class="card notice" :class="{ unread: !n.readAt }">
-              <strong>{{ n.title }}</strong>
-              <p>{{ n.body }}</p>
-              <span>{{ n.category }}</span>
-            </article>
+            <template v-else-if="mineInnerTab === 'interview' && role === 'JOB_SEEKER'">
+              <div class="hero">
+                <span>Interview Confirmation</span>
+                <h2>面试机会确认</h2>
+                <p>平台推送企业岗位面试机会后，你可以明确选择参加或拒绝。</p>
+              </div>
+              <article v-for="item in interviewOpportunities" :key="item.id" class="card">
+                <strong>{{ item.jobPosting.title }}</strong>
+                <p>{{ item.jobPosting.enterprise.name }} · {{ item.status }}</p>
+                <p v-if="item.scheduledAt">建议时间：{{ item.scheduledAt }}</p>
+                <p v-if="item.note">{{ item.note }}</p>
+                <button v-if="item.status === 'PENDING'" @click="respondInterview(item, 'ACCEPTED')">确认参加</button>
+                <button v-if="item.status === 'PENDING'" class="secondary" @click="respondInterview(item, 'DECLINED')">拒绝参加</button>
+              </article>
+              <div v-if="!interviewOpportunities.length" class="empty">
+                <strong>暂无面试机会</strong>
+                <p>等待平台推送岗位面试机会。</p>
+              </div>
+            </template>
+
+            <template v-else-if="mineInnerTab === 'billing' && role === 'JOB_SEEKER'">
+              <article v-for="o in orders" :key="o.id" class="card">
+                <strong>{{ o.description || '订单' }}</strong>
+                <p>{{ o.status }} · ¥{{ (o.amountFen / 100).toFixed(2) }}</p>
+                <button @click="refund(o)">申请部分退款</button>
+              </article>
+              <article v-for="r in refunds" :key="r.id" class="card">
+                <strong>退款申请</strong>
+                <p>{{ r.status }} · {{ r.amountFen }} 分</p>
+              </article>
+            </template>
+
+            <template v-else-if="mineInnerTab === 'partner' && role === 'PARTNER'">
+              <label>机构名称<input v-model="partnerForm.orgName" /></label>
+              <label>联系人<input v-model="partnerForm.contactName" /></label>
+              <label>类型<input v-model="partnerForm.category" /></label>
+              <label>资质<textarea v-model="partnerForm.qualification" rows="4" /></label>
+              <button class="wide" @click="submitPartner">提交入驻申请</button>
+              <article v-for="p in partnerApps" :key="p.id" class="card">
+                <strong>{{ p.orgName }}</strong>
+                <p>{{ p.category }} · {{ p.status }}</p>
+                <p>{{ p.reviewNote || '等待审核' }}</p>
+              </article>
+            </template>
+
+            <template v-else-if="mineInnerTab === 'notifications'">
+              <article v-for="n in notices" :key="n.id" class="card notice" :class="{ unread: !n.readAt }">
+                <strong>{{ n.title }}</strong>
+                <p>{{ n.body }}</p>
+                <span>{{ n.category }}</span>
+              </article>
+            </template>
           </section>
         </template>
       </div>

@@ -1,4 +1,4 @@
-AIHR 本地 PostgreSQL 快照（与 docker-compose 默认库名/用户一致时可用）
+职得（Jobde）工程本地 PostgreSQL 快照（与 docker-compose 默认库名/用户一致时可用）
 
 恢复前请停止依赖该库的 API，或在新库上操作。示例：
 

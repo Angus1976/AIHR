@@ -56,7 +56,7 @@ Page({
     }
   },
   goServices() {
-    wx.navigateTo({ url: '/pages/services/services' });
+    wx.switchTab({ url: '/pages/services/services' });
   },
   async respond(e) {
     const { id, status } = e.currentTarget.dataset;

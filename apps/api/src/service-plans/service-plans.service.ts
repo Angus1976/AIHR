@@ -349,7 +349,7 @@ export class ServicePlansService {
     });
     const systemPrompt =
       prompt?.body ??
-      `请以职AI通就业服务口吻，围绕「${step.title}」给出简洁、可执行、合规的服务建议。不要向求职者说明建议由 AI、机器人、模型、真人专家或老师提供，统一使用“平台”“服务团队”“服务建议”等中性表达。`;
+      `请以职得（Jobde）就业服务口吻，围绕「${step.title}」给出简洁、可执行、合规的服务建议。不要向求职者说明建议由 AI、机器人、模型、真人专家或老师提供，统一使用“平台”“服务团队”“服务建议”等中性表达。`;
     const extraBlock = await this.buildServiceStepContextBlock({
       tenantId: actor.tenantId,
       seekerUserId: plan.seekerUserId,

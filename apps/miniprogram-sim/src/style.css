@@ -1,16 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary: #243f34;
-  --primary-strong: #172a23;
-  --accent: #b87932;
-  --accent-soft: #f2dfbd;
+  /* Jobde 品牌：深藏青 + 青绿 */
+  --primary: #1e3a5f;
+  --primary-strong: #152a45;
+  --accent: #00a89a;
+  --accent-soft: rgba(0, 168, 154, 0.2);
   --paper: #fffdf8;
-  --bg: #f4efe3;
-  --text: #1f2a22;
-  --muted: #6f776d;
-  --line: #ded4c4;
-  --success: #317451;
+  --bg: #f0f4f8;
+  --text: #1a2433;
+  --muted: #5c6678;
+  --line: #d5dde8;
+  --success: #009688;
   --warning: #9a5b25;
   font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
   color: var(--text);
@@ -21,8 +22,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 15% 10%, rgba(242, 223, 189, 0.85), transparent 34%),
-    linear-gradient(135deg, #fbf7ed, #eee6d6);
+    radial-gradient(circle at 15% 10%, rgba(0, 168, 154, 0.12), transparent 36%),
+    linear-gradient(135deg, #f8fafc, #e8eef5);
 }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; transition: transform 180ms ease, box-shadow 180ms ease; }
@@ -92,7 +93,7 @@ select, input, textarea {
   padding: 12px 16px;
 }
 .primary, .phone button, .wide {
-  background: linear-gradient(180deg, #315646, var(--primary-strong));
+  background: linear-gradient(180deg, #2a5080, var(--primary-strong));
   color: #fffaf1;
   box-shadow: 0 12px 28px rgba(36, 63, 52, 0.18);
 }
@@ -139,6 +140,18 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+.header-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.header-logo {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+}
 header strong {
   font-size: 22px;
   color: var(--primary-strong);
@@ -178,6 +191,190 @@ nav button.active {
   flex: 1;
   overflow: auto;
   padding: 0 16px 24px;
+  min-height: 0;
+}
+.content-with-rail {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+.content-with-rail .content-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 0 16px 24px 0;
+}
+.content-with-rail.rail-collapsed .content-scroll {
+  padding-left: 26px;
+}
+.scroll-rail {
+  flex: 0 0 108px;
+  padding: 10px 8px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border-right: 1px solid var(--line);
+  background: rgba(255, 253, 248, 0.72);
+  align-self: stretch;
+}
+.scroll-rail--narrow {
+  flex: 0 0 48px;
+  max-width: 48px;
+  min-width: 0;
+  padding: 6px 1px 12px 3px;
+  gap: 4px;
+}
+.scroll-rail--placeholder {
+  flex-basis: 100px;
+  justify-content: center;
+}
+.scroll-rail--placeholder.scroll-rail--narrow {
+  flex: 0 0 48px;
+  max-width: 48px;
+  flex-basis: 48px;
+}
+.rail-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.rail-track--narrow {
+  gap: 7px;
+  padding: 4px 0;
+}
+.rail-track--service {
+  gap: 12px;
+}
+.rail-track--service.rail-track--narrow {
+  gap: 8px;
+}
+.rail-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.rail-dot--narrow {
+  width: 7px;
+  height: 7px;
+}
+.rail-dot.done {
+  background: var(--accent);
+}
+.rail-dot.todo {
+  background: #c9c3b8;
+}
+.rail-dot.active {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  transform: scale(1.22);
+}
+.rail-dot--narrow.active {
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  transform: scale(1.18);
+}
+.rail-caption {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--primary-strong);
+  text-align: center;
+  line-height: 1.35;
+  max-width: 96px;
+}
+.rail-caption--tight {
+  font-size: 9px;
+  max-width: 44px;
+  line-height: 1.25;
+  word-break: break-all;
+}
+.rail-hint {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-align: center;
+  max-width: 100px;
+}
+.rail-hint--tight {
+  font-size: 8px;
+  max-width: 44px;
+  line-height: 1.35;
+}
+.rail-peek {
+  position: absolute;
+  left: 0;
+  top: 42%;
+  z-index: 2;
+  width: 22px;
+  height: 52px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-left: none;
+  border-radius: 0 14px 14px 0;
+  background: rgba(255, 253, 248, 0.96);
+  color: var(--primary-strong);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 10px rgba(20, 25, 19, 0.08);
+}
+.rail-peek:hover {
+  background: #fff;
+}
+
+/* 覆盖 .phone button 的全局样式，避免侧栏展开条变成主按钮样式 */
+.phone .rail-peek {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-left: none;
+  border-radius: 0 14px 14px 0;
+  background: rgba(255, 253, 248, 0.96);
+  color: var(--primary-strong);
+  box-shadow: 2px 2px 10px rgba(20, 25, 19, 0.08);
+  font-size: 18px;
+  font-weight: 700;
+}
+.phone .rail-peek:hover {
+  transform: none;
+  background: #fff;
+}
+.mine-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 0 14px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.mine-subnav button {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.9);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+.mine-subnav button.active {
+  background: var(--primary);
+  color: #fffaf1;
 }
 .hero, .card, .empty {
   min-width: 0;
@@ -191,7 +388,7 @@ nav button.active {
   word-break: break-word;
 }
 .hero {
-  background: linear-gradient(145deg, rgba(255, 253, 248, 0.96), rgba(242, 223, 189, 0.54));
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.96), rgba(0, 168, 154, 0.12));
 }
 .hero span {
   color: var(--accent);

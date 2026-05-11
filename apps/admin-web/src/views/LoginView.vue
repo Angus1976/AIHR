@@ -198,7 +198,7 @@ input {
 }
 .btn {
   background:
-    linear-gradient(180deg, oklch(0.36 0.065 158), var(--color-primary-strong));
+    linear-gradient(180deg, oklch(0.4 0.1 264), var(--color-primary-strong));
   color: oklch(0.98 0.008 80);
   border: none;
   border-radius: 12px;

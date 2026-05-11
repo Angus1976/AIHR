@@ -9,6 +9,24 @@ function wxLogin() {
   });
 }
 
+const FLOW_STEP_COUNT = 3;
+
+function flowNextLabelForIndex(activeIndex, count) {
+  const labels = ['浏览品牌与主介绍', '进入在招岗位列表', '联调：健康检测、登录与支付试单'];
+  if (count <= 0 || activeIndex < 0) return '';
+  if (activeIndex < count - 1) {
+    const next = labels[activeIndex + 1] || '继续向下滑动查看下一区块';
+    return `建议下一步：${next}`;
+  }
+  return '主要区块已浏览，可在底部进入「服务」或「我的」';
+}
+
+function buildFlowDots(activeIndex, count = FLOW_STEP_COUNT) {
+  return Array.from({ length: count }, (_, i) => ({
+    tone: i < activeIndex ? 'done' : i === activeIndex ? 'active' : 'todo',
+  }));
+}
+
 Page({
   data: {
     health: null,
@@ -17,16 +35,88 @@ Page({
     payResult: '',
     paying: false,
     unreadCount: 0,
+    flowStepCount: FLOW_STEP_COUNT,
+    flowActiveIndex: 0,
+    flowDots: buildFlowDots(0, FLOW_STEP_COUNT),
+    flowNextLabel: flowNextLabelForIndex(0, FLOW_STEP_COUNT),
   },
   onLoad() {
     this.checkHealth();
   },
+  onReady() {
+    this.scheduleFlowRefresh(true);
+  },
   onShow() {
     this.loadUnreadCount();
+    this.scheduleFlowRefresh(true);
+  },
+  onPageScroll() {
+    this.scheduleFlowRefresh(false);
+  },
+  scheduleFlowRefresh(immediate) {
+    if (this._flowTimer) {
+      clearTimeout(this._flowTimer);
+      this._flowTimer = null;
+    }
+    if (immediate) {
+      this.refreshFlowActive();
+      return;
+    }
+    this._flowTimer = setTimeout(() => {
+      this._flowTimer = null;
+      this.refreshFlowActive();
+    }, 120);
+  },
+  _sameIndexFlowDots(prev, next) {
+    if (!prev || !next || prev.length !== next.length) return false;
+    for (let i = 0; i < prev.length; i += 1) {
+      if (prev[i].tone !== next[i].tone) return false;
+    }
+    return true;
+  },
+  refreshFlowActive() {
+    wx.createSelectorQuery()
+      .in(this)
+      .selectAll('.flow-anchor')
+      .boundingClientRect((rects) => {
+        if (!rects || !rects.length) return;
+        const info = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+        const h = info.windowHeight || info.screenHeight;
+        const center = h / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        rects.forEach((r, i) => {
+          const mid = r.top + r.height / 2;
+          const d = Math.abs(mid - center);
+          if (d < bestDist) {
+            bestDist = d;
+            best = i;
+          }
+        });
+        const flowDots = buildFlowDots(best, rects.length);
+        const flowNextLabel = flowNextLabelForIndex(best, rects.length);
+        const { flowActiveIndex, flowStepCount, flowDots: oldDots, flowNextLabel: oldLabel } = this.data;
+        if (
+          flowActiveIndex === best
+          && flowStepCount === rects.length
+          && flowNextLabel === oldLabel
+          && this._sameIndexFlowDots(oldDots, flowDots)
+        ) {
+          return;
+        }
+        this.setData({
+          flowActiveIndex: best,
+          flowDots,
+          flowStepCount: rects.length,
+          flowNextLabel,
+        });
+      })
+      .exec();
   },
   async onPullDownRefresh() {
     try {
       await Promise.all([this.checkHealth(), this.loadUnreadCount()]);
+      this.scheduleFlowRefresh(true);
     } finally {
       wx.stopPullDownRefresh();
     }

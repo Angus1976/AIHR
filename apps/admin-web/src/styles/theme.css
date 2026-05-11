@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
 
 :root {
-  --color-primary: oklch(0.29 0.055 158);
-  --color-primary-strong: oklch(0.22 0.05 158);
-  --color-accent: oklch(0.67 0.13 54);
-  --color-accent-soft: oklch(0.91 0.045 67);
-  --color-sage: oklch(0.73 0.06 145);
-  --color-success: oklch(0.43 0.10 150);
-  --color-success-bg: oklch(0.92 0.052 146);
+  /* Jobde 品牌：深藏青主色 + 青绿强调色 */
+  --color-primary: oklch(0.34 0.1 264);
+  --color-primary-strong: oklch(0.26 0.09 264);
+  --color-accent: oklch(0.62 0.12 195);
+  --color-accent-soft: oklch(0.93 0.04 195);
+  --color-sage: oklch(0.73 0.06 165);
+  --color-success: oklch(0.52 0.11 195);
+  --color-success-bg: oklch(0.93 0.045 195);
   --color-warning: oklch(0.50 0.11 52);
   --color-warning-bg: oklch(0.93 0.06 68);
   --color-bg: oklch(0.965 0.018 78);
@@ -19,8 +20,8 @@
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 24px;
-  --shadow-card: 0 18px 45px rgba(44, 52, 35, 0.08);
-  --shadow-lift: 0 22px 60px rgba(44, 52, 35, 0.14);
+  --shadow-card: 0 18px 45px rgba(20, 35, 55, 0.1);
+  --shadow-lift: 0 22px 60px rgba(20, 35, 55, 0.14);
   font-family:
     'Noto Sans SC',
     'PingFang SC',
@@ -227,7 +228,7 @@ small {
 .btn.sm,
 .btn-primary {
   background:
-    linear-gradient(180deg, oklch(0.36 0.065 158), var(--color-primary-strong)) !important;
+    linear-gradient(180deg, oklch(0.4 0.1 264), var(--color-primary-strong)) !important;
   color: oklch(0.98 0.008 80) !important;
   box-shadow: 0 10px 22px rgba(35, 62, 49, 0.18);
 }

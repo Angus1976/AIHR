@@ -20,7 +20,7 @@ docker compose up -d
 - Redis：缓存、分布式锁、队列后端（若选用 Redis 作 broker）；宿主端口默认 **26379**，容器名 `aihr-app-redis`。
 - 自定义网络 **aihr-app-internal**：`api` 通过主机名 `postgres` 访问数据库，与其他项目网络隔离。
 
-### 2.1.1 AIHR 独立实例常用命令
+### 2.1.1 Jobde 工程 Docker 实例常用命令
 
 ```bash
 # 启动数据层
@@ -32,7 +32,7 @@ docker compose up -d --build api
 # 查看新实例容器
 docker ps --filter name=aihr-app
 
-# 进入 AIHR 专用数据库
+# 进入本项目的 Postgres（容器名 aihr-app-postgres）
 docker exec -it aihr-app-postgres psql -U aihr_app -d aihr_app
 
 # 对新库执行迁移与种子（本地 apps/api 目录）

@@ -32,7 +32,7 @@ export class TencentMeetingService {
       return {
         meetingId: `stub-txm-${Date.now()}`,
         joinUrl:
-          'https://meeting.tencent.com/v2/stub-placeholder?rel=aihr-mock-interview（配置真实 API 后替换为入会链接）',
+          'https://meeting.tencent.com/v2/stub-placeholder?rel=jobde-mock-interview（配置真实 API 后替换为入会链接）',
         startTime: start,
         endTime: end,
         robotSideNote:

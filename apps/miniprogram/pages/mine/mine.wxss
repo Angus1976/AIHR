@@ -1,0 +1,9 @@
+@import '../index/index.wxss';
+
+.intro {
+  margin-bottom: 8rpx;
+}
+
+.intro .section-title {
+  margin-bottom: 8rpx;
+}

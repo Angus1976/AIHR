@@ -92,7 +92,7 @@ onMounted(() => {
       <div class="preview">
         <div class="mark">{{ (form.name || '职').slice(0, 1) }}</div>
         <div>
-          <strong>{{ form.name || tenant?.name || '职AI通' }}</strong>
+          <strong>{{ form.name || tenant?.name || '职得' }}</strong>
           <p>{{ form.welcomeText || '从求职准备到职场成长的一站式服务' }}</p>
         </div>
       </div>

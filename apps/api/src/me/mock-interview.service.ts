@@ -83,7 +83,7 @@ export class MockInterviewService {
       .map((x) => String(x).trim())
       .filter(Boolean)
       .slice(0, 8);
-    const subject = `职AI通·模拟面试 · ${user.displayName}`;
+    const subject = `职得 Jobde · 模拟面试 · ${user.displayName}`;
     const m = await this.tencentMeeting.createMockInterviewMeeting({
       subject,
       seekerDisplayName: user.displayName,

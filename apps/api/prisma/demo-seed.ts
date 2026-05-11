@@ -316,7 +316,7 @@ async function main() {
   });
 
   const order = await prisma.order.upsert({
-    where: { outTradeNo: 'DEMO_AIHR_0001' },
+    where: { outTradeNo: 'DEMO_JOBDEE_0001' },
     create: {
       tenantId: tenant.id,
       payerUserId: seekerA.id,
@@ -324,7 +324,7 @@ async function main() {
       amountFen: 9900,
       description: '完整模拟 · offer 后定金',
       status: OrderStatus.PAID,
-      outTradeNo: 'DEMO_AIHR_0001',
+      outTradeNo: 'DEMO_JOBDEE_0001',
       wechatTradeState: 'SUCCESS',
       wechatTransactionId: 'demo-wechat-tx-0001',
     },
@@ -335,7 +335,7 @@ async function main() {
     },
   });
 
-  const consentContent = '完整模拟：用户同意职AI通服务说明、个人信息处理规则和支付相关条款。';
+  const consentContent = '完整模拟：用户同意职得（Jobde）服务说明、个人信息处理规则和支付相关条款。';
   const existingConsent = await prisma.userConsent.findFirst({
     where: { tenantId: tenant.id, userId: seekerA.id, purpose: 'SERVICE_PAYMENT', version: 'demo-2026-04' },
   });

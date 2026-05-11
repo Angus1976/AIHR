@@ -1,8 +1,8 @@
 import { reactive } from 'vue';
 import { api, getToken } from './api';
 
-const DEFAULT_NAME = '职AI通';
-const DEFAULT_SUBTITLE = '人才服务运营台';
+const DEFAULT_NAME = '职得';
+const DEFAULT_SUBTITLE = 'Jobde · 人才服务运营台';
 
 /** 侧栏与全局展示用的租户品牌（与「租户品牌」页 /tenant/current 对齐） */
 export const tenantBrand = reactive({

@@ -33,7 +33,7 @@ export class HealthController {
         const message = e instanceof Error ? e.message : String(e);
         throw new ServiceUnavailableException({
           status: 'error',
-          service: 'aihr-api',
+          service: 'jobde-api',
           checks: { database: 'up' as const, redis: 'down' as const, detail: message },
           requestId: req.requestId,
           timestamp: new Date().toISOString(),
@@ -43,7 +43,7 @@ export class HealthController {
 
     return {
       status: 'ok',
-      service: 'aihr-api',
+      service: 'jobde-api',
       checks: {
         database: 'up' as const,
         redis: (this.throttleRedis ? 'up' : 'skipped') as 'up' | 'skipped',
@@ -57,7 +57,7 @@ export class HealthController {
     const message = e instanceof Error ? e.message : String(e);
     throw new ServiceUnavailableException({
       status: 'error',
-      service: 'aihr-api',
+      service: 'jobde-api',
       checks: { database: 'down' as const, detail: message },
       requestId: req.requestId,
       timestamp: new Date().toISOString(),

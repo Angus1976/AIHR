@@ -55,10 +55,10 @@ onMounted(async () => {
   <div class="page">
     <section class="hero card">
       <div>
-        <div class="eyebrow">Talent Service OS</div>
+        <div class="eyebrow">Jobde</div>
         <h1>把岗位、候选人、协议与收费节点放到同一个运营现场。</h1>
         <p class="lead">
-          职AI通管理端面向就业服务与平台运营，强调可信、留痕、可配置，而不是堆砌技术标签。
+          职得（Jobde）管理端面向就业服务与平台运营，强调可信、留痕、可配置，而不是堆砌技术标签。
         </p>
       </div>
       <div class="health" :class="{ bad: err }">
